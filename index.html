@@ -1288,7 +1288,7 @@ function buildSlider() {
   const dotsEl = document.getElementById('hsDots');
 
   track.innerHTML = slides.map((s, i) => {
-    const inner = `<img class="hs-img" src="uploads/banners/${s.img.split('/').pop()}" ...> alt="Banner ${i+1}" onerror="this.style.display='none'">`;
+    const inner = `<img class="hs-img" src="uploads/banners/slide1.jpg", ...> alt="Banner ${i+1}" onerror="this.style.display='none'">`;
     if (s.link) {
       return `<div class="hs-slide1" style="cursor:pointer" onclick="location.href='${s.link}'">
         ${inner}
