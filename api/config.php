@@ -1,20 +1,18 @@
 <?php
-// ປ່ຽນມາໃຊ້ Host ແລະ Port ພາຍໃນຂອງ Railway ໃຫ້ຖືກຕ້ອງ
-$host     = "mysql"; // ຫ້າມໃຊ້ kodama.proxy.rlwy.net
+$host     = "mysql"; 
 $user     = "root";
 $password = "DOwJyCtfteqvSLPqqktvGGKHxnZLRiiq";
 $database = "railway";
-$port     = 3306;  // ພອດພາຍໃນຂອງ MySQL ຕ້ອງເປັນ 3306 (ຫ້າມໃຊ້ 57395)
+$port     = 3306;  
 
 try {
-    // $conn = new PDO("mysql:host=$host;port=$port;dbname=$database;charset=utf8", $user, $password);
-    // $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    // // เปลี่ยนเป็น $pdo ให้ตรงกับโค้ดตัวระบบหลัก
-    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$database;charset=utf8", $user, $password);
+    // ເພີ່ມ charset=utf8mb4 ຢູ່ທາງທ້າຍຂອງຊື່ຖານຂໍ້ມູນ
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$database;charset=utf8mb4", $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
+    
+    // ບັງຄັບໃຫ້ MySQL ຣັນຄຳສັ່ງ SET NAMES UTF8MB4 ທຸກຄັ້ງທີ່ເຊື່ອມຕໍ່ (ປ້ອງກັນພາສາຕ່າງດ້າວ)
+    $pdo->exec("SET NAMES utf8mb4");
 } catch(PDOException $e) {
-    // ຫາກເຊື່ອມຕໍ່ບໍ່ຜ່ານ ໃຫ້ມັນພົ່ນ Error ອອກມາເທິງໜ້າຈໍຂາວໆທັນທີ
     die("Database Connection Failed: " . $e->getMessage());
 }
 ?>
