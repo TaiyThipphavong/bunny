@@ -23,4 +23,7 @@ try {
     echo json_encode(['error' => $e->getMessage()]);
     exit;
 }
+$pdo = new PDO("mysql:host=$host;dbname=$db;port=$port;charset=utf8mb4", $user, $pass);
+// หรือเพิ่มบรรทัดนี้ต่อท้ายหลังจากสร้าง $pdo สำเร็จเพื่อความชัวร์:
+$pdo->exec("set names utf8mb4");
 ?>
