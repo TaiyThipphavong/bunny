@@ -1288,14 +1288,14 @@ function buildSlider() {
   const dotsEl = document.getElementById('hsDots');
 
   track.innerHTML = slides.map((s, i) => {
-    const inner = `<img class="hs-img" src="${s.img}" alt="Banner ${i+1}" onerror="this.style.display='none'">`;
+    const inner = `<img class="hs-img" src="uploads/banners/${s.img.split('/').pop()}" ...> alt="Banner ${i+1}" onerror="this.style.display='none'">`;
     if (s.link) {
-      return `<div class="hs-slide" style="cursor:pointer" onclick="location.href='${s.link}'">
+      return `<div class="hs-slide1" style="cursor:pointer" onclick="location.href='${s.link}'">
         ${inner}
         <div class="hs-promo-hint">ກົດເພື່ອເບິ່ງ →</div>
       </div>`;
     }
-    return `<div class="hs-slide">${inner}</div>`;
+    return `<div class="hs-slide1">${inner}</div>`;
   }).join('');
 
   dotsEl.innerHTML = slides.map((_, i) => `
