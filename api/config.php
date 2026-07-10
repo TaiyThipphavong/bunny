@@ -7,7 +7,7 @@ header('Access-Control-Allow-Headers: Content-Type');
 // 1. ดึงค่า Variables จาก Railway
 $host = getenv('MYSQLHOST') ?: 'mysql.railway.internal';
 $user = getenv('MYSQLUSER') ?: 'root';
-$pass = getenv('MYSQLPASSWORD') ?: 'D0wJyCtfteqvSLPqqktvGGKHxnZLRiiq';
+$pass = getenv('MYSQL_ROOT_PASSWORD') ?: 'D0wJyCtfteqvSLPqqktvGGKHxnZLRiiq';
 $db   = getenv('MYSQL_DATABASE') ?: 'railway';
 $port = getenv('MYSQLPORT') ?: '3306';
 
