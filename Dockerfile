@@ -1,12 +1,12 @@
 FROM php:8.2-fpm-alpine
 
-# 1. ติดตั้งไดรเวอร์สำหรับเชื่อมต่อ MySQL ฐานข้อมูล
+# 1. ຕິດຕັ້ງສ່ວນເສີມສຳລັບເຊື່ອມຕໍ່ MySQL ຖານຂໍ້ມູນ
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 
-# 2. ติดตั้ง Nginx เว็บเซิร์ฟเวอร์
+# 2. ຕິດຕັ້ງ Nginx ເວັບເຊີເວີ
 RUN apk add --no-cache nginx
 
-# 3. ปรับคอนฟิก Nginx ให้รองรับโฟลเดอร์ย่อยทั้งหมด
+# 3. ປັບຄອນຟິກ Nginx ໃຫ້ຮອງຮັບໂຟນເດີຍ່ອຍທັງໝົດ
 RUN mkdir -p /run/nginx && \
     echo 'server { \
         listen 8080; \
@@ -23,12 +23,12 @@ RUN mkdir -p /run/nginx && \
         } \
     }' > /etc/nginx/http.d/default.conf
 
-# 4. คัดลอกโค้ดเว็บทั้งหมดเข้า Container
+# 4. ກັອບປີ້ໄຟລ໌ເວັບທັງໝົດເຂົ້າ Container
 COPY . /var/www/html/
 
-# 5. เปิดสิทธิ์ให้ระบบสามารถเขียนและอ่านไฟล์รูปภาพในโฟลเดอร์อัปโหลดได้ 100%
+# 5. ເປີດສິດໃຫ້ລະບົບສາມາດຂຽນ ແລະ ອ່ານໄຟລ໌ຮູບພາບໃນໂຟນເດີອັບໂຫລດໄດ້ 100%
 RUN mkdir -p /var/www/html/uploads && chmod -R 777 /var/www/html/uploads
 
-# 6. เปิดใช้งานทั้ง PHP-FPM และ Nginx พร้อมกัน
+# 6. ເປີດໃຊ້ງານທັງ PHP-FPM ແລະ Nginx ພ້ອມກັນ
 CMD php-fpm -D && nginx -g "daemon off;"
 EXPOSE 8080
