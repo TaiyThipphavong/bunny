@@ -706,8 +706,21 @@ function showSummary() {
   updatePaymentQR(grandTotal, isCod);
 }
 
-/* ── BANK ACCOUNT CONFIG ── */
-const QR_BANK = { name: 'BCEL', acctName: 'bunnies.bunn', acctNum: '010-2-12345-6' };
+/* ── BANK ACCOUNT CONFIG — loaded from admin/payment.html settings ── */
+let QR_BANK = { name: '-', acctName: '-', acctNum: '-', qrImage: '' };
+
+async function loadPaymentSettings() {
+  try {
+    const r = await fetch('api/payment_settings.php');
+    const d = await r.json();
+    QR_BANK = {
+      name: d.bank_name || '-',
+      acctName: d.account_name || '-',
+      acctNum: d.account_number || '-',
+      qrImage: d.qr_image || ''
+    };
+  } catch {}
+}
 
 let _qrAmount = 0;
 
@@ -723,19 +736,11 @@ function updatePaymentQR(amount, isCod) {
   document.getElementById('qr-acct-num').textContent   = QR_BANK.acctNum;
 
   const wrap = document.getElementById('qr-canvas');
-  wrap.innerHTML = '';
-  if (typeof QRCode === 'undefined') return;
-
-  const qrText = `${QR_BANK.acctName}\n${QR_BANK.name} ${QR_BANK.acctNum}\nAmount: ${amount} LAK`;
-
-  new QRCode(wrap, {
-    text: qrText,
-    width: 170,
-    height: 170,
-    colorDark: '#111111',
-    colorLight: '#ffffff',
-    correctLevel: QRCode.CorrectLevel.M
-  });
+  if (QR_BANK.qrImage) {
+    wrap.innerHTML = `<img src="${QR_BANK.qrImage}" alt="QR ໂອນເງິນ" style="width:100%;height:100%;object-fit:contain">`;
+  } else {
+    wrap.innerHTML = '<div style="font-size:.72rem;color:#bbb;text-align:center;padding:10px">ຍັງບໍ່ໄດ້ຕັ້ງຄ່າ QR</div>';
+  }
 }
 
 function copyQrAmount() {
@@ -946,6 +951,7 @@ function showSuccessModal(orderNums,isCod,totalAmt,isSplit) {
 }
 function successOk() { document.getElementById('success-modal').classList.remove('open'); location.href='index.html'; }
 
+loadPaymentSettings().then(showSummary);
 showSummary();
 updateCartBadge();
 </script>
