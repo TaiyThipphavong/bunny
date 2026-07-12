@@ -316,7 +316,6 @@ async function loadProduct(){
       <div class="product-info-panel">
         <div class="product-cat-badge">${p.category_name_lo||p.category_name||''}</div>
         <h1 class="product-title">${p.name_lo||p.name}</h1>
-        <div class="star-row"><span>★★★★☆</span><span>5 ຄອມເມັ້ນ</span></div>
         <div class="product-price-big">${Utils.fmt(p.price)}</div>
 
         ${colors.length?`<div class="option-label">ສີ</div><div class="color-options">${colorsHtml}</div><div id="selectedColorLabel" style="font-size:.88rem;color:var(--text-muted);margin-bottom:18px">ເລືອກ: <strong>${selectedColor}</strong></div>`:''}
