@@ -324,19 +324,16 @@ async function loadProduct(){
         <div class="size-label">ເລືອກຂະໜາດ</div>
         <div class="size-grid" id="sizeGrid">${sizeBtnsHtml}</div>
         <div id="sizeStockInfo" style="margin:8px 0 4px;min-height:20px;font-size:.82rem"></div>
-        <div id="sizePreNotice" style="display:${selectedSizeIsOut?'flex':'none'};align-items:center;gap:8px;background:#eef2ff;border:1px solid #a5b4fc;border-radius:8px;padding:8px 12px;margin:4px 0 10px;font-size:.78rem;color:#4338ca">
-          📦 ຂະໜາດນີ້ <strong>Sold Out</strong> — Pre-Order ໄດ້ · ຮັບສິນຄ້າ <strong>7–14 ວັນ</strong>
+        <div id="sizePreNotice" style="display:${(selectedSizeIsOut && !(p.stock<=0||parseInt(p.pre_order)===1))?'flex':'none'};align-items:center;gap:8px;background:#f5f6ff;border:1px solid #dde1fb;border-radius:8px;padding:9px 12px;margin:4px 0 10px;font-size:.78rem;color:#4338ca">
+          ຂະໜາດນີ້ໝົດຊົ່ວຄາວ — ສາມາດສັ່ງລ່ວງໜ້າໄດ້ (ຮັບພາຍໃນ <strong>7–14 ວັນ</strong>)
         </div>`
         :`${dimStr?`<div class="meta-row" style="margin-bottom:18px"><span class="meta-label">ຂະໜາດ:</span><span>${dimStr}</span></div>`:''}`}
 
         ${(p.stock <= 0 || parseInt(p.pre_order) === 1) ? `
-        <div style="display:flex;align-items:center;gap:10px;background:#eef2ff;border:1.5px solid #a5b4fc;border-radius:12px;padding:12px 16px;margin-bottom:16px">
-          <span style="font-size:1.3rem">📦</span>
-          <div>
-            <div style="font-weight:700;color:#4338ca;font-size:.88rem">PRE-ORDER</div>
-            <div style="font-size:.75rem;color:#6366f1">ສິນຄ້ານີ້ໝົດຊົ່ວຄາວ — ສາມາດສັ່ງລ່ວງໜ້າໄດ້</div>
-            <div style="font-size:.75rem;color:#818cf8;margin-top:2px">🚚 ຈັດສົ່ງພາຍໃນ <strong>7–14 ວັນ</strong></div>
-          </div>
+        <div style="background:#f5f6ff;border:1px solid #dde1fb;border-radius:12px;padding:14px 16px;margin-bottom:16px">
+          <div style="font-weight:700;color:#4338ca;font-size:.85rem;letter-spacing:.3px">PRE-ORDER</div>
+          <div style="font-size:.78rem;color:#6366f1;margin-top:3px">ສິນຄ້ານີ້ໝົດຊົ່ວຄາວ — ສາມາດສັ່ງລ່ວງໜ້າໄດ້</div>
+          <div style="font-size:.78rem;color:#818cf8;margin-top:2px">ຈັດສົ່ງພາຍໃນ <strong>7–14 ວັນ</strong></div>
         </div>
         <div class="option-label">ຈຳນວນ</div>
         <div class="qty-row">
@@ -345,9 +342,9 @@ async function loadProduct(){
             <input type="number" class="qty-input" id="qtyInput" value="1" min="1" max="99" onchange="selectedQty=parseInt(this.value)||1">
             <button class="qty-btn" onclick="changeQty(1)">+</button>
           </div>
-          <span class="stock-info" style="color:#6366f1">📦 Pre-Order</span>
+          <span class="stock-info" style="color:#6366f1">Pre-Order</span>
         </div>
-        <button id="mainCartBtn" class="btn" style="width:100%;margin-bottom:10px;padding:12px;font-size:.88rem;background:#6366f1;color:#fff;border:none;border-radius:10px;cursor:pointer" onclick="addToCart()">📦 Pre-Order — ສັ່ງລ່ວງໜ້າ</button>
+        <button id="mainCartBtn" class="btn" style="width:100%;margin-bottom:10px;padding:12px;font-size:.88rem;background:#6366f1;color:#fff;border:none;border-radius:10px;cursor:pointer" onclick="addToCart()">PRE-ORDER — ສັ່ງລ່ວງໜ້າ</button>
         ` : `
         <div class="option-label">ຈຳນວນ</div>
         <div class="qty-row">
@@ -358,7 +355,7 @@ async function loadProduct(){
           </div>
           <span class="stock-info">✓ ມີ ${p.stock} ຊິ້ນ</span>
         </div>
-        <button id="mainCartBtn" class="btn btn-primary" style="width:100%;margin-bottom:10px;padding:12px;font-size:.88rem" onclick="addToCart()">🛒 ໃສ່ກະຕ່າ</button>
+        <button id="mainCartBtn" class="btn btn-primary" style="width:100%;margin-bottom:10px;padding:12px;font-size:.88rem" onclick="addToCart()">ໃສ່ກະຕ່າ</button>
         `}
         <a href="cart.html" class="btn btn-accent" style="width:100%;justify-content:center;padding:10px;font-size:.82rem">ຊຳລະດຽວ →</a>
 
@@ -369,8 +366,6 @@ async function loadProduct(){
         </div>
 
         <hr class="detail-divider">
-        <div class="meta-row"><span class="meta-label">SKU:</span><span>${p.sku||'-'}</span></div>
-        <div class="meta-row"><span class="meta-label">ນ້ຳໜັກ:</span><span>${p.weight||'-'} lbs</span></div>
         <div class="share-row">
           <span class="share-label">ແຊ</span>
           <a class="share-btn fb" id="share-fb" href="https://www.facebook.com/share/1HVcwKP7Tv/?mibextid=wwXIfr" target="_blank" rel="noopener">
@@ -512,19 +507,19 @@ function _updateSizeCartState() {
   const isProdPre = (currentProduct?.stock ?? 1) <= 0 || parseInt(currentProduct?.pre_order) === 1;
   if (selectedSizeIsOut) {
     btn.className = 'btn';
-    btn.style.cssText = 'width:100%;margin-bottom:12px;padding:16px;font-size:1rem;background:#6366f1;color:#fff;border:none;border-radius:10px;cursor:pointer';
-    btn.textContent = '📦 Pre-Order ຂະໜາດນີ້';
-    if (notice) notice.style.display = 'flex';
+    btn.style.cssText = 'width:100%;margin-bottom:10px;padding:12px;font-size:.88rem;background:#6366f1;color:#fff;border:none;border-radius:10px;cursor:pointer';
+    btn.textContent = 'PRE-ORDER ຂະໜາດນີ້';
+    if (notice) notice.style.display = isProdPre ? 'none' : 'flex';
   } else {
     if (notice) notice.style.display = 'none';
     if (isProdPre) {
       btn.className = 'btn';
-      btn.style.cssText = 'width:100%;margin-bottom:12px;padding:16px;font-size:1rem;background:#6366f1;color:#fff;border:none;border-radius:10px;cursor:pointer';
-      btn.textContent = '📦 Pre-Order — ສັ່ງລ່ວງໜ້າ';
+      btn.style.cssText = 'width:100%;margin-bottom:10px;padding:12px;font-size:.88rem;background:#6366f1;color:#fff;border:none;border-radius:10px;cursor:pointer';
+      btn.textContent = 'PRE-ORDER — ສັ່ງລ່ວງໜ້າ';
     } else {
       btn.className = 'btn btn-primary';
-      btn.style.cssText = 'width:100%;margin-bottom:12px;padding:16px;font-size:1rem';
-      btn.textContent = '🛒 ໃສ່ກະຕ່າ';
+      btn.style.cssText = 'width:100%;margin-bottom:10px;padding:12px;font-size:.88rem';
+      btn.textContent = 'ໃສ່ກະຕ່າ';
     }
   }
 }
