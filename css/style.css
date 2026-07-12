@@ -1088,17 +1088,20 @@ img { max-width: 100%; display: block; }
 
 /* Category */
 .product-cat-badge {
-  font-size: 0.7rem; text-transform: uppercase;
-  letter-spacing: 3px; color: #999; font-weight: 400;
-  margin-bottom: 10px;
+  display: inline-block;
+  font-size: 0.66rem; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--primary-dark); font-weight: 700;
+  background: var(--primary-light);
+  padding: 4px 12px; border-radius: 20px;
+  margin-bottom: 14px;
 }
 
 /* Title */
 .product-title {
   font-family: inherit;
-  font-size: 2.4rem; font-weight: 400;
-  line-height: 1.15; letter-spacing: -0.5px;
-  color: #111; margin-bottom: 12px;
+  font-size: 2.2rem; font-weight: 600;
+  line-height: 1.2; letter-spacing: -0.3px;
+  color: #111; margin-bottom: 10px;
 }
 
 /* Stars */
@@ -1113,8 +1116,8 @@ img { max-width: 100%; display: block; }
 /* Price */
 .product-price-big {
   font-family: inherit;
-  font-size: 2.2rem; font-weight: 600; letter-spacing: -0.5px;
-  color: #111; margin-bottom: 26px;
+  font-size: 1.9rem; font-weight: 700; letter-spacing: -0.3px;
+  color: var(--primary-dark); margin-bottom: 26px;
 }
 
 /* Section labels */
