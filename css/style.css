@@ -136,6 +136,7 @@ img { max-width: 100%; display: block; }
 
 .cart-nav-btn { position: relative; }
 .cart-count { display: none; }
+.cart-count-inline { color: #e74c3c; font-weight: 700; }
 
 /* Search drop bar */
 .nav-search-bar {
