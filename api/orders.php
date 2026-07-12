@@ -2,46 +2,71 @@
 require 'config.php';
 $method = $_SERVER['REQUEST_METHOD'];
 try { $pdo->exec("ALTER TABLE order_items ADD COLUMN is_preorder TINYINT(1) DEFAULT 0"); } catch(Exception $e) {}
+try { $pdo->exec("ALTER TABLE orders ADD COLUMN preorder_confirmed TINYINT(1) DEFAULT 0"); } catch(Exception $e) {}
 
 if($method === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
-    $orderNum = 'BUN-' . date('Ymd') . '-' . strtoupper(substr(uniqid(),6));
+    $baseOrderNum = 'BUN-' . date('Ymd') . '-' . strtoupper(substr(uniqid(),6));
 
-    $itemsTotal      = isset($data['items_total'])      ? (int)$data['items_total']      : (int)$data['total'];
     $shippingFee     = isset($data['shipping_fee'])     ? (int)$data['shipping_fee']      : 0;
     $shippingCompany = isset($data['shipping_company']) ? trim($data['shipping_company']) : '';
     $memberNumber    = isset($data['member_number'])    ? trim($data['member_number'])    : '';
     $paymentMethod   = isset($data['payment_method'])   ? trim($data['payment_method'])   : 'transfer';
     $memberId        = isset($data['member_id'])        ? (int)$data['member_id']         : null;
-    $total           = $itemsTotal + $shippingFee;
     $customerPhone   = preg_replace('/\D/', '', trim($data['phone'] ?? ''));
+    $customerName    = trim($data['name'] ?? '');
+    $customerAddress = trim($data['address'] ?? '');
+    $slip            = $data['slip'] ?? '';
+    $note            = trim($data['note'] ?? '');
 
-    $stmt = $pdo->prepare(
-        "INSERT INTO orders
-         (order_number,customer_name,customer_phone,customer_address,
-          total_amount,items_total,shipping_fee,shipping_company,member_number,
-          payment_method,payment_slip,note,member_id)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
-    );
-    $stmt->execute([
-        $orderNum,
-        trim($data['name'] ?? ''), $customerPhone, trim($data['address'] ?? ''),
-        $total, $itemsTotal, $shippingFee, $shippingCompany, $memberNumber,
-        $paymentMethod, $data['slip'] ?? '', trim($data['note'] ?? ''),
-        $memberId ?: null
-    ]);
-    $orderId = $pdo->lastInsertId();
-
+    /* split cart into a regular-stock bill and a pre-order bill */
+    $regularItems = []; $preorderItems = [];
     foreach($data['items'] as $item) {
-        $isPre = empty($item['is_preorder']) ? 0 : 1;
-        $pdo->prepare("INSERT INTO order_items (order_id,product_id,quantity,price,is_preorder) VALUES (?,?,?,?,?)")
-            ->execute([$orderId, $item['id'], $item['qty'], $item['price'], $isPre]);
-        if (!$isPre) {
-            $pdo->prepare("UPDATE products SET stock=stock-? WHERE id=?")
-                ->execute([$item['qty'], $item['id']]);
-        }
+        if (empty($item['is_preorder'])) $regularItems[] = $item; else $preorderItems[] = $item;
     }
-    echo json_encode(['success'=>true,'order_number'=>$orderNum]);
+    $groups = [];
+    if ($regularItems)  $groups[] = ['items' => $regularItems,  'is_preorder' => 0];
+    if ($preorderItems) $groups[] = ['items' => $preorderItems, 'is_preorder' => 1];
+    $split = count($groups) > 1;
+
+    /* shipping fee goes on the regular-stock bill if one exists, else the single bill */
+    $shipGroupIdx = 0;
+    foreach ($groups as $gi => $g) { if (!$g['is_preorder']) { $shipGroupIdx = $gi; break; } }
+
+    $orderNumbers = [];
+    foreach ($groups as $i => $g) {
+        $groupItemsTotal = array_reduce($g['items'], function($s,$it){ return $s + $it['price']*$it['qty']; }, 0);
+        $groupShipping = ($i === $shipGroupIdx) ? $shippingFee : 0;
+        $groupTotal    = $groupItemsTotal + $groupShipping;
+        $orderNum      = $split ? $baseOrderNum . '-' . ($i === 0 ? 'A' : 'B') : $baseOrderNum;
+
+        $stmt = $pdo->prepare(
+            "INSERT INTO orders
+             (order_number,customer_name,customer_phone,customer_address,
+              total_amount,items_total,shipping_fee,shipping_company,member_number,
+              payment_method,payment_slip,note,member_id)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
+        );
+        $stmt->execute([
+            $orderNum, $customerName, $customerPhone, $customerAddress,
+            $groupTotal, $groupItemsTotal, $groupShipping, $shippingCompany, $memberNumber,
+            $paymentMethod, $slip, $note, $memberId ?: null
+        ]);
+        $orderId = $pdo->lastInsertId();
+
+        foreach($g['items'] as $item) {
+            $isPre = $g['is_preorder'];
+            $pdo->prepare("INSERT INTO order_items (order_id,product_id,quantity,price,is_preorder) VALUES (?,?,?,?,?)")
+                ->execute([$orderId, $item['id'], $item['qty'], $item['price'], $isPre]);
+            if (!$isPre) {
+                $pdo->prepare("UPDATE products SET stock=stock-? WHERE id=?")
+                    ->execute([$item['qty'], $item['id']]);
+            }
+        }
+        $orderNumbers[] = $orderNum;
+    }
+
+    echo json_encode(['success'=>true,'order_number'=>$orderNumbers[0],'order_numbers'=>$orderNumbers,'split'=>$split]);
 
 } elseif($method === 'GET') {
     if(isset($_GET['id'])) {
@@ -167,8 +192,36 @@ if($method === 'POST') {
         exit;
     }
 
+    /* admin: confirm pre-order stock has arrived */
+    if(isset($data['action']) && $data['action'] === 'confirm_preorder') {
+        $id = (int)($data['id'] ?? 0);
+        if(!$id) { echo json_encode(['success'=>false,'error'=>'ບໍ່ພົບ ID']); exit; }
+        $pdo->prepare("UPDATE orders SET preorder_confirmed=1 WHERE id=?")->execute([$id]);
+        echo json_encode(['success'=>true]);
+        exit;
+    }
+
     /* admin status update */
-    $pdo->prepare("UPDATE orders SET status=? WHERE id=?")->execute([$data['status'],$data['id']]);
+    $id = (int)($data['id'] ?? 0);
+    $newStatus = $data['status'] ?? '';
+
+    $chk = $pdo->prepare(
+        "SELECT COUNT(*) total, COALESCE(SUM(is_preorder),0) pre FROM order_items WHERE order_id=?"
+    );
+    $chk->execute([$id]);
+    $counts = $chk->fetch(PDO::FETCH_ASSOC);
+    $isPreorderOrder = $counts['total'] > 0 && $counts['pre'] == $counts['total'];
+
+    if ($isPreorderOrder && !in_array($newStatus, ['pending','confirmed','cancelled'], true)) {
+        $confStmt = $pdo->prepare("SELECT preorder_confirmed FROM orders WHERE id=?");
+        $confStmt->execute([$id]);
+        if (!$confStmt->fetchColumn()) {
+            echo json_encode(['success'=>false,'error'=>'ຕ້ອງກົດຢືນຢັນວ່າເຄື່ອງອໍເດີຮອດແລ້ວກ່ອນຈຶ່ງອັບເດດສະຖານະຕໍ່ໄດ້']);
+            exit;
+        }
+    }
+
+    $pdo->prepare("UPDATE orders SET status=? WHERE id=?")->execute([$newStatus,$id]);
     echo json_encode(['success'=>true]);
 }
 ?>

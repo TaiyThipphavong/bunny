@@ -405,6 +405,10 @@
         <span id="m-no-slip" class="slip-none">ບໍ່ມີຫຼັກຖານ</span>
       </div>
 
+      <div class="status-row" id="preorder-confirm-row" style="display:none">
+        <span style="font-size:.82rem;color:#4338ca">📦 ອໍເດີນີ້ແມ່ນສິນຄ້າສັ່ງລ່ວງໜ້າ — ຕ້ອງຢືນຢັນວ່າເຄື່ອງຮອດແລ້ວກ່ອນຈຶ່ງອັບເດດສະຖານະຕໍ່ໄດ້</span>
+        <button class="btn-save-status" id="btn-confirm-preorder" onclick="confirmPreorderArrived()">✓ ຢືນຢັນເຄື່ອງອໍເດີຮອດແລ້ວ</button>
+      </div>
       <div class="status-row">
         <label>ສະຖານະ</label>
         <select class="status-sel" id="m-status">
@@ -607,6 +611,12 @@ async function openDetail(id) {
   document.getElementById('m-note-wrap').style.display = note ? '' : 'none';
   document.getElementById('m-status').value = o.status;
 
+  const isPreorderOrder = parseInt(o.has_preorder) > 0;
+  const preConfirmed    = parseInt(o.preorder_confirmed) > 0;
+  document.getElementById('preorder-confirm-row').style.display = (isPreorderOrder && !preConfirmed) ? '' : 'none';
+  document.querySelectorAll('#m-status option[value="shipped"], #m-status option[value="completed"]')
+    .forEach(opt => opt.disabled = isPreorderOrder && !preConfirmed);
+
   const iT = Number(o.items_total ?? o.total_amount ?? 0);
   const sF = Number(o.shipping_fee ?? 0);
   document.getElementById('m-items-total').textContent  = '₭' + iT.toLocaleString();
@@ -752,6 +762,26 @@ async function updateStatus() {
     applyFilter();
     showToast('ອັບເດດສະຖານະສຳເລັດ!');
     closeModal();
+  } else {
+    showToast(d.error || 'ອັບເດດສະຖານະບໍ່ໄດ້');
+  }
+}
+
+async function confirmPreorderArrived() {
+  const r = await fetch('../api/orders.php', {
+    method:'PUT', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ action:'confirm_preorder', id: currentId })
+  });
+  const d = await r.json();
+  if (d.success) {
+    const ord = allOrders.find(o => o.id == currentId);
+    if (ord) ord.preorder_confirmed = 1;
+    document.getElementById('preorder-confirm-row').style.display = 'none';
+    document.querySelectorAll('#m-status option[value="shipped"], #m-status option[value="completed"]')
+      .forEach(opt => opt.disabled = false);
+    showToast('ຢືນຢັນເຄື່ອງອໍເດີຮອດແລ້ວ!');
+  } else {
+    showToast(d.error || 'ຢືນຢັນບໍ່ໄດ້');
   }
 }
 

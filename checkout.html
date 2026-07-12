@@ -609,6 +609,9 @@
     <div class="suc-title">ສັ່ງຊື້ສຳເລັດ!</div>
     <div class="suc-sub">ເລກທີ່ສັ່ງຊື້</div>
     <div class="suc-num" id="suc-ordernum"></div>
+    <div id="suc-split-note" style="display:none;font-size:.8rem;color:#856404;background:#fff8e1;border-radius:8px;padding:8px 12px;margin-bottom:12px">
+      ສິນຄ້າພ້ອມສົ່ງ ແລະ ສິນຄ້າສັ່ງລ່ວງໜ້າ ຖືກແຍກເປັນ 2 ບິນ — ບິນສັ່ງລ່ວງໜ້າຈະຈັດສົ່ງເມື່ອສິນຄ້າຮອດ
+    </div>
     <div id="suc-transfer-block" class="suc-amounts">
       <div class="suc-amt t">
         <div class="al">ຍອດໂອນ</div>
@@ -919,14 +922,16 @@ async function placeOrder() {
   if (data.success) {
     reviewCancel();
     localStorage.removeItem('cart');
-    showSuccessModal(data.order_number, isCod, grandTotal);
+    showSuccessModal(data.order_numbers || [data.order_number], isCod, grandTotal, data.split);
   } else {
     showToast('ຜິດພາດ: '+(data.error||'ກະລຸນາລອງໃໝ່'), 'error');
   }
 }
 
-function showSuccessModal(orderNum,isCod,totalAmt) {
-  document.getElementById('suc-ordernum').textContent=orderNum;
+function showSuccessModal(orderNums,isCod,totalAmt,isSplit) {
+  document.getElementById('suc-ordernum').textContent=orderNums.join('  /  ');
+  const splitNote = document.getElementById('suc-split-note');
+  if (splitNote) splitNote.style.display = isSplit ? 'block' : 'none';
   if (isCod) {
     document.getElementById('suc-transfer-block').style.display='none';
     document.getElementById('suc-cod-block').style.display='';
