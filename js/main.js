@@ -221,4 +221,15 @@ function buildProductCard(p) {
 /* ============================================================
    INIT
    ============================================================ */
-document.addEventListener('DOMContentLoaded', () => Cart.updateBadge());
+document.addEventListener('DOMContentLoaded', () => {
+  Cart.updateBadge();
+
+  const hamBtn    = document.getElementById('hamBtn');
+  const mobileNav = document.getElementById('mobileNav');
+  if (hamBtn && mobileNav) {
+    hamBtn.addEventListener('click', () => mobileNav.classList.toggle('open'));
+    mobileNav.querySelectorAll('a').forEach(a =>
+      a.addEventListener('click', () => mobileNav.classList.remove('open'))
+    );
+  }
+});
