@@ -1079,8 +1079,9 @@ img { max-width: 100%; display: block; }
 /* responsive */
 @media (max-width: 900px) {
   .product-detail-grid { grid-template-columns: 1fr; gap: 32px; }
-  .thumb-col { flex-direction: row; width: auto; max-height: none; overflow-x: auto; overflow-y: hidden; }
-  .thumb { width: 68px; height: 68px; }
+  .thumb-col { flex-direction: row; width: auto; max-height: none; overflow-x: auto; overflow-y: hidden; order: 2; margin-top: 10px; }
+  .thumb { width: 52px; height: 52px; }
+  .main-image-wrap { order: 1; }
   .size-grid { grid-template-columns: repeat(4, 1fr); }
 }
 .product-info-panel { display: flex; flex-direction: column; }
