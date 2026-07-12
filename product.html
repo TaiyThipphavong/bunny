@@ -344,7 +344,10 @@ async function loadProduct(){
           </div>
           <span class="stock-info" style="color:#6366f1">Pre-Order</span>
         </div>
-        <button id="mainCartBtn" class="btn" style="width:100%;margin-bottom:10px;padding:12px;font-size:.88rem;background:#6366f1;color:#fff;border:none;border-radius:10px;cursor:pointer" onclick="addToCart()">PRE-ORDER — ສັ່ງລ່ວງໜ້າ</button>
+        <div style="display:flex;gap:10px;margin-bottom:10px">
+          <button id="mainCartBtn" class="btn" style="flex:1;padding:12px;font-size:.88rem;background:#6366f1;color:#fff;border:none;border-radius:10px;cursor:pointer" onclick="addToCart()">PRE-ORDER — ສັ່ງລ່ວງໜ້າ</button>
+          <a href="cart.html" class="btn btn-accent" style="flex:1;justify-content:center;padding:12px;font-size:.82rem">ຊຳລະດຽວ →</a>
+        </div>
         ` : `
         <div class="option-label">ຈຳນວນ</div>
         <div class="qty-row">
@@ -355,9 +358,11 @@ async function loadProduct(){
           </div>
           <span class="stock-info">✓ ມີ ${p.stock} ຊິ້ນ</span>
         </div>
-        <button id="mainCartBtn" class="btn btn-primary" style="width:100%;margin-bottom:10px;padding:12px;font-size:.88rem" onclick="addToCart()">ໃສ່ກະຕ່າ</button>
+        <div style="display:flex;gap:10px;margin-bottom:10px">
+          <button id="mainCartBtn" class="btn btn-primary" style="flex:1;padding:12px;font-size:.88rem" onclick="addToCart()">ໃສ່ກະຕ່າ</button>
+          <a href="cart.html" class="btn btn-accent" style="flex:1;justify-content:center;padding:12px;font-size:.82rem">ຊຳລະດຽວ →</a>
+        </div>
         `}
-        <a href="cart.html" class="btn btn-accent" style="width:100%;justify-content:center;padding:10px;font-size:.82rem">ຊຳລະດຽວ →</a>
 
         <div class="trust-badges">
           <div class="trust-item"><span class="ti-icon">🚚</span><strong>ສົ່ງໄວ</strong>ທົ່ວລາວ</div>
@@ -507,18 +512,18 @@ function _updateSizeCartState() {
   const isProdPre = (currentProduct?.stock ?? 1) <= 0 || parseInt(currentProduct?.pre_order) === 1;
   if (selectedSizeIsOut) {
     btn.className = 'btn';
-    btn.style.cssText = 'width:100%;margin-bottom:10px;padding:12px;font-size:.88rem;background:#6366f1;color:#fff;border:none;border-radius:10px;cursor:pointer';
+    btn.style.cssText = 'flex:1;padding:12px;font-size:.88rem;background:#6366f1;color:#fff;border:none;border-radius:10px;cursor:pointer';
     btn.textContent = 'PRE-ORDER ຂະໜາດນີ້';
     if (notice) notice.style.display = isProdPre ? 'none' : 'flex';
   } else {
     if (notice) notice.style.display = 'none';
     if (isProdPre) {
       btn.className = 'btn';
-      btn.style.cssText = 'width:100%;margin-bottom:10px;padding:12px;font-size:.88rem;background:#6366f1;color:#fff;border:none;border-radius:10px;cursor:pointer';
+      btn.style.cssText = 'flex:1;padding:12px;font-size:.88rem;background:#6366f1;color:#fff;border:none;border-radius:10px;cursor:pointer';
       btn.textContent = 'PRE-ORDER — ສັ່ງລ່ວງໜ້າ';
     } else {
       btn.className = 'btn btn-primary';
-      btn.style.cssText = 'width:100%;margin-bottom:10px;padding:12px;font-size:.88rem';
+      btn.style.cssText = 'flex:1;padding:12px;font-size:.88rem';
       btn.textContent = 'ໃສ່ກະຕ່າ';
     }
   }
