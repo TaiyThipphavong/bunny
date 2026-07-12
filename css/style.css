@@ -1371,6 +1371,11 @@ img { max-width: 100%; display: block; }
   .product-detail-grid { grid-template-columns: 1fr; gap: 28px; }
   .cart-layout { grid-template-columns: 1fr; }
 
+  /* gallery: stack thumb strip above the main image on mobile */
+  .product-images { flex-direction: column; }
+  .main-image-wrap { width: 100%; max-height: none; }
+  .main-image-wrap img#mainImg { height: auto; aspect-ratio: 1 / 1; }
+
   /* product page mobile sizes */
   .product-title { font-size: 1.6rem; }
   .product-price-big { font-size: 1.6rem; }
