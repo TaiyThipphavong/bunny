@@ -1358,6 +1358,7 @@ img { max-width: 100%; display: block; }
 /* ── Tablet small (≤900px) ── */
 @media (max-width: 900px) {
   .shop-container { grid-template-columns: 1fr; }
+  .shop-main { grid-column: 1; }
   .shop-sidebar {
     position: fixed; top: 0; left: 0; bottom: 0;
     width: 280px; z-index: 500; background: white;
