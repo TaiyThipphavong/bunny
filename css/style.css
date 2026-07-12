@@ -548,7 +548,7 @@ img { max-width: 100%; display: block; }
   gap: 12px; flex-wrap: wrap;
 }
 .toolbar-left { display: flex; align-items: center; }
-.result-count { font-size: 0.82rem; color: var(--text-muted); }
+.result-count { display: none; font-size: 0.82rem; color: var(--text-muted); }
 .toolbar-right { display: flex; align-items: center; gap: 8px; }
 
 .sort-select {
