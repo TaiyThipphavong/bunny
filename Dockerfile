@@ -1,7 +1,7 @@
 FROM php:8.2-fpm-alpine
 
-# 1. ຕິດຕັ້ງສ່ວນເສີມສຳລັບເຊື່ອມຕໍ່ MySQL ຖານຂໍ້ມູນ
-RUN docker-php-ext-install pdo pdo_mysql mysqli
+# 1. ຕິດຕັ້ງສ່ວນເສີມສຳລັບເຊື່ອມຕໍ່ MySQL ຖານຂໍ້ມູນ ແລະ curl (ສຳລັບສົ່ງ SMS ຜ່ານ Twilio)
+RUN apk add --no-cache curl-dev && docker-php-ext-install pdo pdo_mysql mysqli curl
 
 # 2. ຕິດຕັ້ງ Nginx ເວັບເຊີເວີ
 RUN apk add --no-cache nginx

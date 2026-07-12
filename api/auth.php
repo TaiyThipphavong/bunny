@@ -4,6 +4,40 @@ require 'config.php';
 $data   = json_decode(file_get_contents('php://input'), true);
 $action = $data['action'] ?? '';
 
+/* ── SMS via Twilio ──
+   Set these env vars (e.g. in Railway → Variables) to enable real SMS:
+   TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER (E.164, e.g. +15551234567)
+   Local numbers are stored without the +856 country code (e.g. "02012345678"). */
+function sendOtpSms($localPhone, $otp) {
+    $sid   = getenv('TWILIO_ACCOUNT_SID');
+    $token = getenv('TWILIO_AUTH_TOKEN');
+    $from  = getenv('TWILIO_FROM_NUMBER');
+    if (!$sid || !$token || !$from) return false;
+
+    $to = '+856' . ltrim($localPhone, '0');
+    $ch = curl_init("https://api.twilio.com/2010-04-01/Accounts/$sid/Messages.json");
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_USERPWD        => "$sid:$token",
+        CURLOPT_TIMEOUT        => 10,
+        CURLOPT_POSTFIELDS     => http_build_query([
+            'To'   => $to,
+            'From' => $from,
+            'Body' => "ລະຫັດ OTP ຂອງທ່ານ (bunnies.bunn): $otp — ໝົດອາຍຸໃນ 5 ນາທີ",
+        ]),
+    ]);
+    $result    = curl_exec($ch);
+    $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode < 200 || $httpCode >= 300) {
+        error_log("Twilio SMS failed ($httpCode): $result");
+        return false;
+    }
+    return true;
+}
+
 /* ── LOGIN (phone + password) ── */
 if ($action === 'login') {
     $phone = preg_replace('/\D/', '', trim($data['phone'] ?? ''));
@@ -58,8 +92,11 @@ if ($action === 'send_otp') {
          ON DUPLICATE KEY UPDATE otp=VALUES(otp), expires_at=NOW() + INTERVAL 5 MINUTE"
     )->execute([$phone, $otp]);
 
-    // TODO: ເຊື່ອມ SMS gateway ໃນ production
-    echo json_encode(['success' => true, 'otp_debug' => $otp]); // DEV ONLY
+    $sent = sendOtpSms($phone, $otp);
+
+    $response = ['success' => true, 'sms_sent' => $sent];
+    if (!$sent) $response['otp_debug'] = $otp; // fallback while Twilio isn't configured
+    echo json_encode($response);
     exit;
 }
 
