@@ -111,6 +111,9 @@ const Cart = {
       el.textContent = n;
       el.style.display = n > 0 ? '' : 'none';
     });
+    document.querySelectorAll('.cart-count-inline').forEach(el => {
+      el.textContent = n;
+    });
   }
 };
 

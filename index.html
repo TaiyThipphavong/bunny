@@ -1349,15 +1349,6 @@ function initSliderEvents() {
 }
 
 buildSlider();
-
-// Sync cart count inline
-function syncCartInline() {
-  const c = Cart.count();
-  document.querySelectorAll('.cart-count-inline').forEach(el => el.textContent = c);
-}
-const origUpdate = Cart.updateBadge;
-Cart.updateBadge = function() { origUpdate.call(this); syncCartInline(); };
-syncCartInline();
 </script>
 
 <!-- ═══════════════════════════════════════════
