@@ -27,13 +27,15 @@
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; font-size: 17px; }
+html { scroll-behavior: smooth; font-size: 17px; overflow-x: hidden; width: 100%; }
 
 body {
   font-family: 'Noto Sans Lao', sans-serif;
   background: var(--bg);
   color: var(--text);
   line-height: 1.7;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 h1, h2, h3, h4, .btn {

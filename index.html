@@ -1251,9 +1251,9 @@ document.getElementById('hamBtn').addEventListener('click', () => {
    ============================================================ */
 const SLIDER_KEY  = 'bunn_banners';
 const SLIDER_FALLBACK = [
-  { img:'uploads/banners/slide1.jpg', link:'' },
-  { img:'uploads/banners/slide2.jpg', link:'' },
-  { img:'uploads/banners/slide3.jpg', link:'' }
+  { img:'uploads/banners/slide1.jpg.png', link:'' },
+  { img:'uploads/banners/slide2.jpg.png', link:'' },
+  { img:'uploads/banners/slide3.jpg.png', link:'' }
 ];
 const INTERVAL = 5000;
 let sliderCur = 0, sliderTotal = 0, sliderTimer;
@@ -1289,14 +1289,14 @@ function buildSlider() {
   const dotsEl = document.getElementById('hsDots');
 
   track.innerHTML = slides.map((s, i) => {
-    const inner = `<img class="hs-img" src="uploads/banners/slide1.jpg", ...> alt="Banner ${i+1}" onerror="this.style.display='none'">`;
+    const inner = `<img class="hs-img" src="${s.img}" alt="Banner ${i+1}" onerror="this.style.display='none'">`;
     if (s.link) {
-      return `<div class="hs-slide1" style="cursor:pointer" onclick="location.href='${s.link}'">
+      return `<div class="hs-slide" style="cursor:pointer" onclick="location.href='${s.link}'">
         ${inner}
         <div class="hs-promo-hint">ກົດເພື່ອເບິ່ງ →</div>
       </div>`;
     }
-    return `<div class="hs-slide1">${inner}</div>`;
+    return `<div class="hs-slide">${inner}</div>`;
   }).join('');
 
   dotsEl.innerHTML = slides.map((_, i) => `
