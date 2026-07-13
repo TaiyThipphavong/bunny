@@ -33,7 +33,8 @@ RUN cp -r /var/www/html/uploads /var/www/html/uploads-seed
 # 5. ເປີດສິດໃຫ້ລະບົບສາມາດຂຽນ ແລະ ອ່ານໄຟລ໌ຮູບພາບໃນໂຟນເດີອັບໂຫລດໄດ້ 100%
 RUN mkdir -p /var/www/html/uploads && chmod -R 777 /var/www/html/uploads
 
-# 6. ຕອນ container ເລີ່ມແລ່ນ: ຕັ້ງສິດຂຽນໄຟລ໌ໃໝ່ (Volume ຈະທັບສິດເກົ່າຕອນ mount),
-#    ຄືນຄ່າຮູບເດີມທີ່ຂາດຫາຍໄປໃສ່ Volume (ບໍ່ທັບຮູບທີ່ອັບໂຫລດໄວ້ແລ້ວ), ແລ້ວເປີດໃຊ້ງານ PHP-FPM ແລະ Nginx
-CMD chmod -R 777 /var/www/html/uploads && rsync -a --ignore-existing /var/www/html/uploads-seed/ /var/www/html/uploads/ && php-fpm -D && nginx -g "daemon off;"
+# 6. ຕອນ container ເລີ່ມແລ່ນ: ຄືນຄ່າຮູບເດີມທີ່ຂາດຫາຍໄປໃສ່ Volume ກ່ອນ (ບໍ່ທັບຮູບທີ່ອັບໂຫລດໄວ້ແລ້ວ),
+#    ແລ້ວຈຶ່ງຕັ້ງສິດຂຽນໄຟລ໌ (ຕ້ອງເຮັດ "ຫຼັງ" rsync ສະເໝີ ເພາະ rsync ຈະເອົາສິດເກົ່າຈາກ image
+#    ມາທັບໃສ່ໄຟລ໌/ໂຟນເດີທີ່ມັນສ້າງ), ແລ້ວເປີດໃຊ້ງານ PHP-FPM ແລະ Nginx
+CMD rsync -r --ignore-existing /var/www/html/uploads-seed/ /var/www/html/uploads/ && chmod -R 777 /var/www/html/uploads && php-fpm -D && nginx -g "daemon off;"
 EXPOSE 8080
