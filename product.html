@@ -272,7 +272,11 @@ async function loadProduct(){
     <div class="thumb ${i===0?'active':''}" onclick="galleryGoto(${i})">
       <img src="${img}" alt="" loading="lazy" onerror="this.parentNode.style.display='none'">
     </div>`).join('');
-  const colorsHtml=colors.map(c=>`<div class="color-option ${c===selectedColor?'selected':''}" style="background:${Utils.getColor(c)}" title="${c}" onclick="selectColor('${c}',this)"></div>`).join('');
+  const colorsHtml=colors.map((c,i)=>{
+    const swatchImg = galleryImages[i];
+    const bg = swatchImg ? `background-image:url('${swatchImg}')` : `background:${Utils.getColor(c)}`;
+    return `<div class="color-option ${c===selectedColor?'selected':''}" style="${bg}" title="${c}" onclick="selectColor('${c}',this,${i})"></div>`;
+  }).join('');
 
   // sizes: prefer p.sizes (with per-size out-of-stock), fall back to dimensions
   const dimStr = (p.dimensions||'').trim();
@@ -528,7 +532,7 @@ function _updateSizeCartState() {
     }
   }
 }
-function selectColor(color,el){selectedColor=color;document.querySelectorAll('.color-option').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');const l=document.getElementById('selectedColorLabel');if(l)l.innerHTML=`ເລືອກ: <strong>${color}</strong>`;}
+function selectColor(color,el,imgIdx){selectedColor=color;document.querySelectorAll('.color-option').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');const l=document.getElementById('selectedColorLabel');if(l)l.innerHTML=`ເລືອກ: <strong>${color}</strong>`;if(imgIdx!==undefined&&galleryImages[imgIdx])galleryGoto(imgIdx);}
 function changeQty(delta){const input=document.getElementById('qtyInput');const max=currentProduct?.stock||99;selectedQty=Math.min(max,Math.max(1,parseInt(input.value)+delta));input.value=selectedQty;}
 function addToCart(){
   if(!currentProduct)return;
