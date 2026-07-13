@@ -686,11 +686,16 @@ function processFiles(files) {
       .then(r => r.json())
       .then(d => {
         pendingSlots = pendingSlots.filter(s => s.id !== slot.id);
-        if (d.path) imagesList.push(d.path);
+        if (d.path) {
+          imagesList.push(d.path);
+        } else {
+          alert('ອັບໂຫລດຮູບບໍ່ໄດ້ — ' + (d.error || 'unknown'));
+        }
         renderGrid();
       })
-      .catch(() => {
+      .catch(err => {
         pendingSlots = pendingSlots.filter(s => s.id !== slot.id);
+        alert('ອັບໂຫລດຮູບບໍ່ໄດ້ — ' + err.message);
         renderGrid();
       });
   });
