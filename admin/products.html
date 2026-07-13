@@ -999,8 +999,15 @@ async function saveProduct() {
     status:       'active'
   };
   const method = data.id ? 'PUT' : 'POST';
-  await fetch('../api/products.php', { method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
-  closeModal(); loadProducts();
+  try {
+    const r = await fetch('../api/products.php', { method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    if (d.success === false) throw new Error(d.error || 'unknown');
+    closeModal(); loadProducts();
+  } catch (err) {
+    alert('ບັນທຶກສິນຄ້າບໍ່ສຳເລັດ — ' + err.message);
+  }
 }
 
 function deleteProduct(id) {

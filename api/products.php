@@ -82,8 +82,9 @@ switch($method) {
     $sizes  = json_encode(isset($data['sizes'])  && is_array($data['sizes'])  ? $data['sizes']  : []);
     $costPrice = isset($data['cost_price']) ? (float)$data['cost_price'] : 0;
     $preOrder = isset($data['pre_order']) ? (int)$data['pre_order'] : 0;
-    $stmt = $pdo->prepare("INSERT INTO products (category_id,name,description,price,cost_price,stock,image,sku,weight,dimensions,colors,sizes,pre_order) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
-    $stmt->execute([$data['category_id'],$data['name'],$data['description'],$data['price'],$costPrice,$data['stock'],$data['image'],$data['sku'],$data['weight'],$data['dimensions'],$colors,$sizes,$preOrder]);
+    $status = $data['status'] ?? 'active';
+    $stmt = $pdo->prepare("INSERT INTO products (category_id,name,description,price,cost_price,stock,image,sku,weight,dimensions,colors,sizes,pre_order,status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+    $stmt->execute([$data['category_id'],$data['name'],$data['description'],$data['price'],$costPrice,$data['stock'],$data['image'],$data['sku'],$data['weight'],$data['dimensions'],$colors,$sizes,$preOrder,$status]);
     $productId = $pdo->lastInsertId();
     if(!empty($data['extra_images']) && is_array($data['extra_images'])) {
       $imgStmt = $pdo->prepare("INSERT INTO product_images (product_id,image_path,sort_order) VALUES (?,?,?)");
