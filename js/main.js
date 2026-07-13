@@ -210,8 +210,8 @@ function buildProductCard(p) {
         <div style="font-size:14px;margin-bottom:4px">${p.name_lo || p.name}</div>
         <div style="font-weight:bold;color:#c9a96e">${Utils.fmt(p.price)}</div>
         <button onclick="event.stopPropagation();Cart.add(${safeP})"
-                style="margin-top:8px;width:100%;padding:6px;background:#111;color:#fff;
-                       border:none;border-radius:4px;cursor:pointer;font-size:13px">
+                style="margin-top:6px;width:100%;padding:4px;background:#111;color:#fff;
+                       border:none;border-radius:4px;cursor:pointer;font-size:11px">
           + ໃສ່ກະຕ່າ
         </button>
       </div>
