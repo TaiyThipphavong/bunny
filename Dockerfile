@@ -29,6 +29,7 @@ COPY . /var/www/html/
 # 5. ເປີດສິດໃຫ້ລະບົບສາມາດຂຽນ ແລະ ອ່ານໄຟລ໌ຮູບພາບໃນໂຟນເດີອັບໂຫລດໄດ້ 100%
 RUN mkdir -p /var/www/html/uploads && chmod -R 777 /var/www/html/uploads
 
-# 6. ເປີດໃຊ້ງານທັງ PHP-FPM ແລະ Nginx ພ້ອມກັນ
-CMD php-fpm -D && nginx -g "daemon off;"
+# 6. ຕັ້ງສິດຂຽນໄຟລ໌ໃໝ່ທຸກຄັ້ງທີ່ container ເລີ່ມແລ່ນ (Volume ຈະທັບສິດເກົ່າຕອນ mount)
+#    ແລ້ວເປີດໃຊ້ງານທັງ PHP-FPM ແລະ Nginx ພ້ອມກັນ
+CMD chmod -R 777 /var/www/html/uploads && php-fpm -D && nginx -g "daemon off;"
 EXPOSE 8080
