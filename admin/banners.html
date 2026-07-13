@@ -260,12 +260,12 @@ function processFile(file, idx) {
       fd.append('image', blob, 'banner.jpg');
       const r = await fetch('../api/upload.php', { method: 'POST', body: fd });
       const d = await r.json();
-      if (!d.success) throw new Error();
+      if (!d.success) throw new Error(d.error || 'unknown');
       banners[idx].img = d.path;
       await save();
       if (msg) { msg.className='msg ok'; msg.textContent='✓ ບັນທຶກສຳເລັດ!'; }
-    } catch {
-      if (msg) { msg.className='msg err'; msg.textContent='ອັບໂຫລດບໍ່ໄດ້'; }
+    } catch (err) {
+      if (msg) { msg.className='msg err'; msg.textContent='ອັບໂຫລດບໍ່ໄດ້ — ' + err.message; }
     }
     setTimeout(() => { prog.style.display='none'; fill.style.width='0%'; render(); }, 350);
   });

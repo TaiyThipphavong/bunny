@@ -148,10 +148,10 @@ async function handleFile(file) {
       img.style.display = 'block';
       msg.className = 'msg ok'; msg.textContent = 'ອັບໂຫລດຮູບສຳເລັດ — ກົດບັນທຶກເພື່ອຢືນຢັນ';
     } else {
-      msg.className = 'msg err'; msg.textContent = 'ອັບໂຫລດບໍ່ໄດ້';
+      msg.className = 'msg err'; msg.textContent = 'ອັບໂຫລດບໍ່ໄດ້ — ' + (d.error || 'unknown');
     }
-  } catch {
-    msg.className = 'msg err'; msg.textContent = 'ເຊື່ອມ server ບໍ່ໄດ້';
+  } catch (err) {
+    msg.className = 'msg err'; msg.textContent = 'ເຊື່ອມ server ບໍ່ໄດ້ — ' + err.message;
   }
 }
 
