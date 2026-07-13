@@ -812,7 +812,10 @@ img { max-width: 100%; display: block; }
 .list-card-cat { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); margin-bottom: 6px; }
 .list-card-name { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
 .list-card-price { font-size: 1rem; color: var(--primary); font-weight: 700; margin-bottom: 10px; font-family: inherit; }
-.list-card-desc { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.6; }
+.list-card-desc { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.6; }
+.list-card-desc.clamped { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.list-card-more { background: none; border: none; padding: 0; margin: 0 0 14px; font-size: 0.78rem; color: var(--primary); font-weight: 700; cursor: pointer; display: inline-block; }
+.list-card-more:hover { text-decoration: underline; }
 
 /* Spinner */
 .shop-spinner { display: flex; justify-content: center; padding: 80px 0; }

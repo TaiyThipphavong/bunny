@@ -1120,10 +1120,18 @@ function buildListCard(p) {
         <div class="list-card-cat">${p.category_name || ''}</div>
         <div class="list-card-name">${p.name_lo || p.name}</div>
         <div class="list-card-price">${Utils.fmt(p.price)}</div>
-        <p class="list-card-desc">${p.description || 'ສິນຄ້າຄຸນນະພາບສູງ'}</p>
+        <p class="list-card-desc clamped" id="listDesc-${p.id}">${p.description || 'ສິນຄ້າຄຸນນະພາບສູງ'}</p>
+        ${(p.description || '').length > 140 ? `<button class="list-card-more" onclick="event.stopPropagation();toggleListDesc(${p.id},this)">ອ່ານເພີ່ມເຕີມ</button>` : ''}
         <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();quickAddToCart(${p.id},${JSON.stringify(p.name_lo||p.name)},${p.price},${JSON.stringify(p.image_url||p.image||'')},${(p.stock??1)===0})">${(p.stock??1)===0?'📦 Pre-Order':'🛒 ໃສ່ກະຕ່າ'}</button>
       </div>
     </div>`;
+}
+
+function toggleListDesc(id, btn) {
+  const el = document.getElementById('listDesc-' + id);
+  if (!el) return;
+  const collapsed = el.classList.toggle('clamped');
+  btn.textContent = collapsed ? 'ອ່ານເພີ່ມເຕີມ' : 'ຫຍໍ້ລົງ';
 }
 
 /* --- Pagination --- */
