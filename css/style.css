@@ -599,6 +599,7 @@ img { max-width: 100%; display: block; }
   box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   transition: box-shadow .3s, transform .3s;
   border-radius: 4px; overflow: hidden;
+  display: flex; flex-direction: column; height: 100%;
 }
 .shop-card:hover {
   box-shadow: 0 8px 28px rgba(0,0,0,0.13);
@@ -762,6 +763,7 @@ img { max-width: 100%; display: block; }
 /* Card body */
 .shop-card-body {
   padding: 12px 14px 16px;
+  display: flex; flex-direction: column; flex: 1;
 }
 .shop-card-label {
   font-size: 0.63rem; font-weight: 700; letter-spacing: 0.4px;
@@ -1430,7 +1432,7 @@ img { max-width: 100%; display: block; }
   .shop-card-overlay { display: none; }
   .mobile-cart-btn {
     display: block; width: 100%;
-    padding: 10px 12px; margin-top: 10px;
+    padding: 10px 12px; margin-top: auto;
     background: transparent; color: #111;
     border: 1.5px solid #ddd; border-radius: 6px;
     font-family: inherit; font-size: .82rem; font-weight: 700;
