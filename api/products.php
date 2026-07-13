@@ -15,6 +15,9 @@ function decodeColors($val) {
   return is_array($arr) ? $arr : array_filter(array_map('trim', explode(',', $val)));
 }
 
+header('Content-Type: application/json');
+
+try {
 switch($method) {
   case 'GET':
     if(isset($_GET['id']) || (isset($_GET['action']) && $_GET['action']==='single')) {
@@ -132,5 +135,9 @@ switch($method) {
     $pdo->prepare("DELETE FROM products WHERE id=?")->execute([$id]);
     echo json_encode(['success'=>true]);
     break;
+}
+} catch (Throwable $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
 ?>
