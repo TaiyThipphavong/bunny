@@ -1,30 +1,32 @@
 <?php
-require 'config.php';
 header('Content-Type: application/json');
+set_error_handler(function($severity, $message, $file, $line) {
+    throw new ErrorException($message, 0, $severity, $file, $line);
+});
 
-if (empty($_FILES['image'])) {
-    echo json_encode(['success' => false, 'error' => 'no file received']);
-    exit;
-}
-if ($_FILES['image']['error'] !== UPLOAD_ERR_OK) {
-    echo json_encode(['success' => false, 'error' => 'upload error code ' . $_FILES['image']['error']]);
-    exit;
-}
+try {
+    require 'config.php';
 
-$dir = __DIR__ . '/../uploads/';
-if (!is_dir($dir)) mkdir($dir, 0777, true);
+    if (empty($_FILES['image'])) {
+        throw new Exception('no file received');
+    }
+    if ($_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+        throw new Exception('upload error code ' . $_FILES['image']['error']);
+    }
 
-$ext      = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-$filename = 'uploads/' . uniqid('prod_') . '.' . $ext;
-$dest     = __DIR__ . '/../' . $filename;
+    $dir = __DIR__ . '/../uploads/';
+    if (!is_dir($dir)) mkdir($dir, 0777, true);
 
-if (move_uploaded_file($_FILES['image']['tmp_name'], $dest)) {
+    $ext      = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+    $filename = 'uploads/' . uniqid('prod_') . '.' . $ext;
+    $dest     = __DIR__ . '/../' . $filename;
+
+    if (!move_uploaded_file($_FILES['image']['tmp_name'], $dest)) {
+        throw new Exception('move_uploaded_file failed (dir writable: ' . (is_writable($dir) ? 'yes' : 'no') . ')');
+    }
+
     echo json_encode(['success' => true, 'path' => $filename]);
-} else {
-    echo json_encode([
-        'success'      => false,
-        'error'        => 'move_uploaded_file failed',
-        'dir_writable' => is_writable($dir),
-        'dest'         => $dest,
-    ]);
+} catch (Throwable $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
