@@ -169,7 +169,7 @@ function render() {
     return `
     <div class="banner-card" id="bc-${i}">
       <div class="banner-preview">
-        <img src="${b.img}" style="display:block">
+        <img src="${b.img ? '../' + b.img : ''}" style="display:${b.img?'block':'none'}">
         <span class="banner-num">Slide ${i+1}${hasLink?' 🔗':''}</span>
         <button class="banner-del" onclick="removeBanner(${i})" title="ລຶບ">✕</button>
       </div>
