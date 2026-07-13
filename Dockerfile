@@ -3,8 +3,8 @@ FROM php:8.2-fpm-alpine
 # 1. ຕິດຕັ້ງສ່ວນເສີມສຳລັບເຊື່ອມຕໍ່ MySQL ຖານຂໍ້ມູນ ແລະ curl (ສຳລັບສົ່ງ SMS ຜ່ານ Twilio)
 RUN apk add --no-cache curl-dev && docker-php-ext-install pdo pdo_mysql mysqli curl
 
-# 2. ຕິດຕັ້ງ Nginx ເວັບເຊີເວີ
-RUN apk add --no-cache nginx
+# 2. ຕິດຕັ້ງ Nginx ເວັບເຊີເວີ ແລະ rsync (ສຳລັບຄືນຄ່າຮູບເດີມໃສ່ Volume ຕອນ container ເລີ່ມແລ່ນ)
+RUN apk add --no-cache nginx rsync
 
 # 3. ປັບຄອນຟິກ Nginx ໃຫ້ຮອງຮັບໂຟນເດີຍ່ອຍທັງໝົດ
 RUN mkdir -p /run/nginx && \
@@ -26,10 +26,14 @@ RUN mkdir -p /run/nginx && \
 # 4. ກັອບປີ້ໄຟລ໌ເວັບທັງໝົດເຂົ້າ Container
 COPY . /var/www/html/
 
+# 4b. ເກັບສຳເນົາຮູບທີ່ມາພ້ອມກັບໂຄ້ດໄວ້ນອກເສັ້ນທາງ Volume (uploads/) ເພື່ອນຳມາຄືນຄ່າຕອນ
+#     container ເລີ່ມແລ່ນ ຖ້າ Volume ຍັງບໍ່ມີໄຟລ໌ນັ້ນ (Volume mount ຈະທັບຮູບເດີມທັງໝົດ)
+RUN cp -r /var/www/html/uploads /var/www/html/uploads-seed
+
 # 5. ເປີດສິດໃຫ້ລະບົບສາມາດຂຽນ ແລະ ອ່ານໄຟລ໌ຮູບພາບໃນໂຟນເດີອັບໂຫລດໄດ້ 100%
 RUN mkdir -p /var/www/html/uploads && chmod -R 777 /var/www/html/uploads
 
-# 6. ຕັ້ງສິດຂຽນໄຟລ໌ໃໝ່ທຸກຄັ້ງທີ່ container ເລີ່ມແລ່ນ (Volume ຈະທັບສິດເກົ່າຕອນ mount)
-#    ແລ້ວເປີດໃຊ້ງານທັງ PHP-FPM ແລະ Nginx ພ້ອມກັນ
-CMD chmod -R 777 /var/www/html/uploads && php-fpm -D && nginx -g "daemon off;"
+# 6. ຕອນ container ເລີ່ມແລ່ນ: ຕັ້ງສິດຂຽນໄຟລ໌ໃໝ່ (Volume ຈະທັບສິດເກົ່າຕອນ mount),
+#    ຄືນຄ່າຮູບເດີມທີ່ຂາດຫາຍໄປໃສ່ Volume (ບໍ່ທັບຮູບທີ່ອັບໂຫລດໄວ້ແລ້ວ), ແລ້ວເປີດໃຊ້ງານ PHP-FPM ແລະ Nginx
+CMD chmod -R 777 /var/www/html/uploads && rsync -a --ignore-existing /var/www/html/uploads-seed/ /var/www/html/uploads/ && php-fpm -D && nginx -g "daemon off;"
 EXPOSE 8080
