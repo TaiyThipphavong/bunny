@@ -1253,7 +1253,6 @@ loadProducts();
 /* ============================================================
    HERO SLIDER — dynamic
    ============================================================ */
-const SLIDER_KEY  = 'bunn_banners';
 const SLIDER_FALLBACK = [
   { img:'uploads/banners/slide1.jpg.png', link:'' },
   { img:'uploads/banners/slide2.jpg.png', link:'' },
@@ -1262,31 +1261,17 @@ const SLIDER_FALLBACK = [
 const INTERVAL = 5000;
 let sliderCur = 0, sliderTotal = 0, sliderTimer;
 
-function getBannerData() {
+async function getBannerData() {
   try {
-    const saved = localStorage.getItem(SLIDER_KEY);
-    if (saved) {
-      const arr = JSON.parse(saved);
-      if (Array.isArray(arr) && arr.length) {
-        // normalize: support both string[] and {img,link}[]
-        return arr.map(item =>
-          typeof item === 'string' ? { img: item, link: '' } : item
-        );
-      }
-    }
-    // migrate old bunn_banner_1/2/3
-    const old = [];
-    for (let i = 1; i <= 10; i++) {
-      const d = localStorage.getItem('bunn_banner_' + i);
-      if (d) old.push({ img: d, link: '' }); else break;
-    }
-    if (old.length) return old;
+    const r = await fetch('api/banner_settings.php');
+    const arr = await r.json();
+    if (Array.isArray(arr) && arr.length) return arr;
   } catch {}
   return SLIDER_FALLBACK;
 }
 
-function buildSlider() {
-  const slides = getBannerData();
+async function buildSlider() {
+  const slides = await getBannerData();
   sliderTotal  = slides.length;
 
   const track  = document.getElementById('hsTrack');
