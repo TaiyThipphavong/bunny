@@ -267,7 +267,7 @@ function renderCart() {
       ${imgTag}${placeholder}
       <div class="ct-info">
         <div class="ct-name">${item.name_lo||item.name}</div>
-        <div class="ct-meta">${item.color ? 'ສີ: '+item.color+' · ' : ''}₭${Number(item.price).toLocaleString()} / ຊິ້ນ</div>
+        <div class="ct-meta">${item.size ? 'ຂະໜາດ: '+item.size+' · ' : ''}${item.color ? 'ສີ: '+item.color+' · ' : ''}₭${Number(item.price).toLocaleString()} / ຊິ້ນ</div>
         <div class="ct-bottom">
           <div class="qty-wrap">
             <button class="qty-btn" onclick="changeQty('${item.key}',${item.quantity-1})">−</button>

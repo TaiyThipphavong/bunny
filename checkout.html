@@ -789,10 +789,11 @@ function _rvRenderItems(cart) {
     }
 
     const itemId = String(item.id) + (item.color ? '_' + item.color : '');
+    const variant = [item.size ? 'ຂະໜາດ ' + item.size : '', item.color || ''].filter(Boolean).join(' · ');
     return `<div class="rv-item${isOut?' out-of-stock':''}" id="rv-row-${idx}">
       ${statusDot}
       ${item.image ? `<img class="rv-item-img" src="${item.image}" onerror="this.style.display='none'">` : ''}
-      <span class="rv-item-name">${name_}</span>
+      <span class="rv-item-name">${name_}${variant ? ` <small style="color:#999;font-weight:400">(${variant})</small>` : ''}</span>
       <span class="rv-item-qty">×${qty}</span>
       ${extraTag}
       <span class="rv-item-price">₭${Number(item.price*qty).toLocaleString()}</span>

@@ -55,7 +55,7 @@ const Cart = {
   get() {
     return this._load().map(i => ({
       ...i,
-      key:      i.key || String(i.id) + '_' + (i.color || ''),
+      key:      i.key || String(i.id) + '_' + (i.color || '') + '_' + (i.size || ''),
       quantity: i.quantity || i.qty || 1,
       qty:      i.qty || i.quantity || 1,
       name_lo:  i.name_lo || i.name,
@@ -71,17 +71,17 @@ const Cart = {
     return this._load().reduce((s, i) => s + i.price * (i.qty || i.quantity || 1), 0);
   },
 
-  add(product, qty = 1, color = '') {
+  add(product, qty = 1, color = '', size = '') {
     const items = this._load();
-    const key   = String(product.id) + '_' + color;
+    const key   = String(product.id) + '_' + color + '_' + size;
     const idx   = items.findIndex(i =>
-      (i.key === key) || (String(i.id) === String(product.id) && (i.color || '') === color)
+      (i.key === key) || (String(i.id) === String(product.id) && (i.color || '') === color && (i.size || '') === size)
     );
     if (idx > -1) {
       const q = (items[idx].qty || items[idx].quantity || 1) + qty;
       items[idx].qty = q; items[idx].quantity = q;
     } else {
-      items.push({ ...product, key, color, qty, quantity: qty,
+      items.push({ ...product, key, color, size, qty, quantity: qty,
                    image_url: product.image_url || product.image || '' });
     }
     this._save(items);
@@ -90,14 +90,14 @@ const Cart = {
 
   remove(key) {
     this._save(this._load().filter(i =>
-      (i.key || String(i.id) + '_' + (i.color || '')) !== key
+      (i.key || String(i.id) + '_' + (i.color || '') + '_' + (i.size || '')) !== key
     ));
   },
 
   updateQty(key, qty) {
     const items = this._load();
     const idx = items.findIndex(i =>
-      (i.key || String(i.id) + '_' + (i.color || '')) === key
+      (i.key || String(i.id) + '_' + (i.color || '') + '_' + (i.size || '')) === key
     );
     if (idx > -1) {
       items[idx].qty = qty; items[idx].quantity = qty;

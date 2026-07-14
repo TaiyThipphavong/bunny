@@ -206,7 +206,7 @@ async function doRegister(){
 function doLogout(){clearUser();updateUserNav();document.getElementById('userDropdown').classList.remove('open');}
 
 /* PRODUCT */
-let currentProduct=null, selectedColor='', selectedQty=1, selectedSizeIsOut=false, selectedSizeStock=null;
+let currentProduct=null, selectedColor='', selectedSize='', selectedQty=1, selectedSizeIsOut=false, selectedSizeStock=null;
 let galleryImages=[], galleryIdx=0;
 
 /* ── Gallery ── */
@@ -291,7 +291,7 @@ async function loadProduct(){
   const _getSizeStock = s => typeof s.stock === 'number' ? s.stock : (s.out ? 0 : null);
   const _isSizeOut   = s => { const k = _getSizeStock(s); return k !== null && k <= 0; };
   const firstAvail = sizeList.find(s => !_isSizeOut(s)) || sizeList[0] || {};
-  let selectedSize = (firstAvail.name||firstAvail) || '';
+  selectedSize = (firstAvail.name||firstAvail) || '';
   selectedSizeIsOut  = _isSizeOut(firstAvail);
   selectedSizeStock  = _getSizeStock(firstAvail);
   const sizeBtnsHtml = sizeList.map(s => {
@@ -518,7 +518,7 @@ function changeQty(delta){const input=document.getElementById('qtyInput');const 
 function addToCart(){
   if(!currentProduct)return;
   const prod = Object.assign({}, currentProduct, { is_preorder: (currentProduct.stock??1)<=0 || parseInt(currentProduct.pre_order)===1 || selectedSizeIsOut });
-  Cart.add(prod, selectedQty, selectedColor);
+  Cart.add(prod, selectedQty, selectedColor, selectedSize);
 }
 
 function _initShareLinks() {
