@@ -452,7 +452,8 @@
           <span class="pot-text" id="pot-text">ປິດ — ສິນຄ້ານີ້ຂາຍປົກກະຕິ</span>
         </label>
         <div class="pre-order-hint" id="pre-order-hint" style="display:none">
-          📦 ລູກຄ້າຈະເຫັນ <strong>PRE-ORDER</strong> ແລະ ໄດ້ຮັບສິນຄ້າພາຍໃນ <strong>7–14 ວັນ</strong>
+          📦 ລູກຄ້າຈະເຫັນ <strong>PRE-ORDER</strong> ແລະ ໄດ້ຮັບສິນຄ້າພາຍໃນ
+          <input type="text" id="p-preorder-days" placeholder="7-14" style="width:70px;padding:4px 8px;border:1.5px solid #ddd;border-radius:6px;font-family:inherit;font-size:.85rem;margin:0 2px"> ວັນ
         </div>
       </div>
       <div class="fg-row">
@@ -913,6 +914,7 @@ function openModal(reset = true) {
     sizesList  = []; renderSizeTags();
     renderGrid();
     document.getElementById('p-preorder').checked = false;
+    document.getElementById('p-preorder-days').value = '';
     updatePreOrderLabel();
     document.getElementById('modal-title').textContent = 'ເພີ່ມສິນຄ້າ';
   }
@@ -975,6 +977,7 @@ function editProduct(p) {
   renderGrid();
 
   document.getElementById('p-preorder').checked = !!parseInt(p.pre_order);
+  document.getElementById('p-preorder-days').value = p.preorder_days || '';
   updatePreOrderLabel();
   document.getElementById('modal-title').textContent = 'ແກ້ໄຂສິນຄ້າ';
   openModal(false);
@@ -1003,6 +1006,7 @@ async function saveProduct() {
     sizes:        sizesList,
     cost_price:   document.getElementById('p-cost').value || 0,
     pre_order:    document.getElementById('p-preorder').checked ? 1 : 0,
+    preorder_days: document.getElementById('p-preorder-days').value.trim(),
     status:       'active'
   };
   const method = data.id ? 'PUT' : 'POST';
