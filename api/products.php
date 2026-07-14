@@ -88,8 +88,10 @@ switch($method) {
     $status = $data['status'] ?? 'active';
     $categoryId = !empty($data['category_id']) ? (int)$data['category_id'] : null;
     $weight = isset($data['weight']) && $data['weight'] !== '' ? (float)$data['weight'] : null;
+    $stock = isset($data['stock']) && $data['stock'] !== '' ? (int)$data['stock'] : 0;
+    $price = isset($data['price']) && $data['price'] !== '' ? (float)$data['price'] : 0;
     $stmt = $pdo->prepare("INSERT INTO products (category_id,name,description,price,cost_price,stock,image,sku,weight,dimensions,colors,sizes,pre_order,status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-    $stmt->execute([$categoryId,$data['name'],$data['description'],$data['price'],$costPrice,$data['stock'],$data['image'],$data['sku'],$weight,$data['dimensions'],$colors,$sizes,$preOrder,$status]);
+    $stmt->execute([$categoryId,$data['name'],$data['description'],$price,$costPrice,$stock,$data['image'],$data['sku'],$weight,$data['dimensions'],$colors,$sizes,$preOrder,$status]);
     $productId = $pdo->lastInsertId();
     if(!empty($data['extra_images']) && is_array($data['extra_images'])) {
       $imgStmt = $pdo->prepare("INSERT INTO product_images (product_id,image_path,sort_order) VALUES (?,?,?)");
@@ -121,8 +123,10 @@ switch($method) {
     $preOrder = isset($data['pre_order']) ? (int)$data['pre_order'] : 0;
     $categoryId = !empty($data['category_id']) ? (int)$data['category_id'] : null;
     $weight = isset($data['weight']) && $data['weight'] !== '' ? (float)$data['weight'] : null;
+    $stock = isset($data['stock']) && $data['stock'] !== '' ? (int)$data['stock'] : 0;
+    $price = isset($data['price']) && $data['price'] !== '' ? (float)$data['price'] : 0;
     $stmt = $pdo->prepare("UPDATE products SET category_id=?,name=?,description=?,price=?,cost_price=?,stock=?,image=?,sku=?,weight=?,dimensions=?,colors=?,sizes=?,status=?,pre_order=? WHERE id=?");
-    $stmt->execute([$categoryId,$data['name'],$data['description'],$data['price'],$costPrice,$data['stock'],$data['image'],$data['sku'],$weight,$data['dimensions'],$colors,$sizes,$data['status'],$preOrder,$data['id']]);
+    $stmt->execute([$categoryId,$data['name'],$data['description'],$price,$costPrice,$stock,$data['image'],$data['sku'],$weight,$data['dimensions'],$colors,$sizes,$data['status'],$preOrder,$data['id']]);
     $pdo->prepare("DELETE FROM product_images WHERE product_id=?")->execute([$data['id']]);
     if(!empty($data['extra_images']) && is_array($data['extra_images'])) {
       $imgStmt = $pdo->prepare("INSERT INTO product_images (product_id,image_path,sort_order) VALUES (?,?,?)");
