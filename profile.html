@@ -336,7 +336,7 @@ function toggleAcc(id, el) {
 }
 
 /* ── ORDERS ── */
-const STATUS_LO = { pending:'ລໍຖ້າ', confirmed:'ຢືນຢັນ', shipped:'ກຳລັງສົ່ງ', delivered:'ສົ່ງແລ້ວ', cancelled:'ຍົກເລີກ' };
+const STATUS_LO = { pending:'ລໍຖ້າ', confirmed:'ຢືນຢັນ', shipped:'ກຳລັງສົ່ງ', completed:'ສຳເລັດ', cancelled:'ຍົກເລີກ' };
 const fmt = n => '₭' + Number(n||0).toLocaleString();
 let ordersCache = null;
 
@@ -358,7 +358,7 @@ async function loadOrders(type) {
   if (type === 'pending') {
     filtered = all.filter(o => ['pending','confirmed','shipped'].includes(o.status));
   } else if (type === 'done') {
-    filtered = all.filter(o => o.status === 'delivered');
+    filtered = all.filter(o => o.status === 'completed');
   } else {
     filtered = all;
   }
