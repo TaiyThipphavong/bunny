@@ -1,5 +1,6 @@
 <?php
 require 'config.php';
+header('Content-Type: application/json');
 $report = $_GET['type'] ?? 'summary';
 
 /* shared month filter helper */
@@ -12,6 +13,7 @@ function monthWhere($col = 'created_at') {
     return ['', []];
 }
 
+try {
 if ($report === 'summary') {
     [$mw, $mp] = monthWhere();
     $stmt = $pdo->prepare(
@@ -281,7 +283,7 @@ if ($report === 'summary') {
         "SELECT
            oi.id, oi.quantity, oi.price,
            p.id AS product_id,
-           COALESCE(p.name_lo, p.name) AS product_name,
+           p.name AS product_name,
            p.image AS product_image, p.sku,
            o.id AS order_id, o.order_number,
            o.customer_name, o.customer_phone,
@@ -296,7 +298,7 @@ if ($report === 'summary') {
     /* aggregate by product (how many units per product) */
     $byProduct = $pdo->query(
         "SELECT
-           COALESCE(p.name_lo, p.name) AS product_name,
+           p.name AS product_name,
            p.image AS product_image, p.sku,
            SUM(oi.quantity)            AS total_units,
            COUNT(DISTINCT o.id)        AS order_count
@@ -309,5 +311,9 @@ if ($report === 'summary') {
     )->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode(['summary' => $summary, 'rows' => $rows, 'by_product' => $byProduct]);
+}
+} catch (Throwable $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
 ?>
