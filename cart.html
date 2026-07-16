@@ -238,9 +238,9 @@ function goCheckout(e) {
   try { user = JSON.parse(localStorage.getItem('bunn_user')); } catch {}
   if (!user) {
     e.preventDefault();
-    showConfirm('ທ່ານຍັງບໍ່ໄດ້ເຂົ້າສູ່ລະບົບ — ຕ້ອງການສືບຕໍ່ຊຳລະເງິນຕໍ່ໄປບໍ່?', () => location.href = 'checkout.html', {
+    showConfirm('ຕ້ອງເຂົ້າສູ່ລະບົບກ່ອນຈຶ່ງຈະຊຳລະເງິນໄດ້', () => location.href = 'index.html?redirect=checkout.html', {
       title: 'ຍັງບໍ່ໄດ້ເຂົ້າສູ່ລະບົບ',
-      okLabel: 'ສືບຕໍ່ຊຳລະເງິນ'
+      okLabel: 'ເຂົ້າສູ່ລະບົບ'
     });
     return false;
   }

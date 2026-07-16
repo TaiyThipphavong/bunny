@@ -637,6 +637,11 @@ function openAuth(tab = 'login') {
   document.body.style.overflow = 'hidden';
   switchAuthTab(tab); clearMsgs();
 }
+function _postAuthRedirect() {
+  const redirect = Utils.getParam('redirect');
+  if (redirect) { location.href = redirect; return; }
+  closeAuth();
+}
 function closeAuth() { document.getElementById('authOverlay').classList.remove('open'); document.body.style.overflow = ''; }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeAuth(); closeSearch(); } });
 
@@ -727,7 +732,7 @@ async function doLogin() {
       setUser({ name: d.name, phone: d.phone, id: d.id });
       showOk('ເຂົ້າສູ່ລະບົບສຳເລັດ! 🎉');
       updateUserNav();
-      setTimeout(closeAuth, 1200);
+      setTimeout(_postAuthRedirect, 1200);
     } else {
       showErr(d.error || 'ເບີໂທ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກ');
     }
@@ -902,7 +907,7 @@ async function regComplete() {
     const d = await r.json();
     if (d.success) {
       setUser({ name: d.name, phone: d.phone, id: d.id });
-      showOk('ສ້າງບັນຊີສຳເລັດ! 🎉'); updateUserNav(); setTimeout(closeAuth, 1400);
+      showOk('ສ້າງບັນຊີສຳເລັດ! 🎉'); updateUserNav(); setTimeout(_postAuthRedirect, 1400);
     } else showErr(d.error || 'ຜິດພາດ');
   } catch { showErr('ເຊື່ອມ server ບໍ່ໄດ້'); }
 }
@@ -1249,6 +1254,7 @@ updateUserNav();
 updatePriceRange();
 loadSidebarCats();
 loadProducts();
+if (Utils.getParam('redirect') && !getUser()) openAuth('login');
 
 /* ============================================================
    HERO SLIDER — dynamic
