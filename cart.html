@@ -216,7 +216,7 @@
           <span class="sum-total-val" id="sum-total">₭0</span>
         </div>
 
-        <a href="checkout.html" class="btn-checkout" id="btn-checkout">ຊຳລະ →</a>
+        <a href="checkout.html" class="btn-checkout" id="btn-checkout" onclick="return goCheckout(event)">ຊຳລະ →</a>
         <a href="index.html#shop" class="btn-continue">← ຊ້ອບຕໍ່</a>
 
         <div class="trust-badges">
@@ -231,7 +231,22 @@
 </div>
 
 <script src="js/main.js"></script>
+<script src="js/confirm.js"></script>
 <script>
+function goCheckout(e) {
+  let user = null;
+  try { user = JSON.parse(localStorage.getItem('bunn_user')); } catch {}
+  if (!user) {
+    e.preventDefault();
+    showConfirm('ທ່ານຍັງບໍ່ໄດ້ເຂົ້າສູ່ລະບົບ — ຕ້ອງການສືບຕໍ່ຊຳລະເງິນຕໍ່ໄປບໍ່?', () => location.href = 'checkout.html', {
+      title: 'ຍັງບໍ່ໄດ້ເຂົ້າສູ່ລະບົບ',
+      okLabel: 'ສືບຕໍ່ຊຳລະເງິນ'
+    });
+    return false;
+  }
+  return true;
+}
+
 function renderCart() {
   const items = Cart.get();
   const count = items.reduce((s,i) => s + (i.quantity||1), 0);
