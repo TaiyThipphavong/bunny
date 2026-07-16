@@ -3,6 +3,7 @@ require 'config.php';
 $method = $_SERVER['REQUEST_METHOD'];
 try { $pdo->exec("ALTER TABLE order_items ADD COLUMN is_preorder TINYINT(1) DEFAULT 0"); } catch(Exception $e) {}
 try { $pdo->exec("ALTER TABLE orders ADD COLUMN preorder_confirmed TINYINT(1) DEFAULT 0"); } catch(Exception $e) {}
+try { $pdo->exec("ALTER TABLE orders ADD COLUMN stock_deducted TINYINT(1) DEFAULT 0"); } catch(Exception $e) {}
 
 if($method === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
@@ -58,10 +59,8 @@ if($method === 'POST') {
             $isPre = $g['is_preorder'];
             $pdo->prepare("INSERT INTO order_items (order_id,product_id,quantity,price,is_preorder) VALUES (?,?,?,?,?)")
                 ->execute([$orderId, $item['id'], $item['qty'], $item['price'], $isPre]);
-            if (!$isPre) {
-                $pdo->prepare("UPDATE products SET stock=stock-? WHERE id=?")
-                    ->execute([$item['qty'], $item['id']]);
-            }
+            /* stock is deducted when admin confirms the order, not at checkout --
+               see the status-update handler below */
         }
         $orderNumbers[] = $orderNum;
     }
@@ -123,12 +122,7 @@ if($method === 'POST') {
             echo json_encode(['success'=>false,'error'=>'ຍົກເລີກບໍ່ໄດ້ — ຄຳສັ່ງນີ້ຖືກຢືນຢັນແລ້ວ']);
             exit;
         }
-        /* restore stock */
-        $items = $pdo->prepare("SELECT product_id, quantity FROM order_items WHERE order_id=?");
-        $items->execute([$id]);
-        foreach($items->fetchAll(PDO::FETCH_ASSOC) as $it) {
-            $pdo->prepare("UPDATE products SET stock=stock+? WHERE id=?")->execute([$it['quantity'],$it['product_id']]);
-        }
+        /* stock was never deducted while pending, so nothing to restore here */
         $pdo->prepare("UPDATE orders SET status='cancelled' WHERE id=?")->execute([$id]);
         echo json_encode(['success'=>true]);
         exit;
@@ -176,7 +170,10 @@ if($method === 'POST') {
         $itStmt->execute([$itemId]);
         $it = $itStmt->fetch(PDO::FETCH_ASSOC);
         if(!$it) { echo json_encode(['success'=>false,'error'=>'ບໍ່ພົບລາຍການ']); exit; }
-        if(!$it['is_preorder']) {
+        $sdStmt = $pdo->prepare("SELECT stock_deducted FROM orders WHERE id=?");
+        $sdStmt->execute([$orderId]);
+        $stockWasDeducted = (bool)$sdStmt->fetchColumn();
+        if(!$it['is_preorder'] && $stockWasDeducted) {
             $pdo->prepare("UPDATE products SET stock=stock+? WHERE id=?")->execute([$it['quantity'],$it['product_id']]);
         }
         $pdo->prepare("DELETE FROM order_items WHERE id=?")->execute([$itemId]);
@@ -219,6 +216,30 @@ if($method === 'POST') {
             echo json_encode(['success'=>false,'error'=>'ຕ້ອງກົດຢືນຢັນວ່າເຄື່ອງອໍເດີຮອດແລ້ວກ່ອນຈຶ່ງອັບເດດສະຖານະຕໍ່ໄດ້']);
             exit;
         }
+    }
+
+    /* stock moves only once, the first time an order leaves "pending" into
+       confirmed/shipped/completed -- and reverses if a confirmed order is
+       later cancelled. Tracked via orders.stock_deducted so this is safe
+       to run through repeated/out-of-order status changes. */
+    $sdStmt = $pdo->prepare("SELECT stock_deducted FROM orders WHERE id=?");
+    $sdStmt->execute([$id]);
+    $stockDeducted = (bool)$sdStmt->fetchColumn();
+
+    if (!$stockDeducted && !in_array($newStatus, ['pending','cancelled'], true)) {
+        $items = $pdo->prepare("SELECT product_id, quantity FROM order_items WHERE order_id=? AND is_preorder=0");
+        $items->execute([$id]);
+        foreach ($items->fetchAll(PDO::FETCH_ASSOC) as $it) {
+            $pdo->prepare("UPDATE products SET stock=stock-? WHERE id=?")->execute([$it['quantity'], $it['product_id']]);
+        }
+        $pdo->prepare("UPDATE orders SET stock_deducted=1 WHERE id=?")->execute([$id]);
+    } elseif ($stockDeducted && $newStatus === 'cancelled') {
+        $items = $pdo->prepare("SELECT product_id, quantity FROM order_items WHERE order_id=? AND is_preorder=0");
+        $items->execute([$id]);
+        foreach ($items->fetchAll(PDO::FETCH_ASSOC) as $it) {
+            $pdo->prepare("UPDATE products SET stock=stock+? WHERE id=?")->execute([$it['quantity'], $it['product_id']]);
+        }
+        $pdo->prepare("UPDATE orders SET stock_deducted=0 WHERE id=?")->execute([$id]);
     }
 
     $pdo->prepare("UPDATE orders SET status=? WHERE id=?")->execute([$newStatus,$id]);
