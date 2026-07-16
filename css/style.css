@@ -1412,10 +1412,10 @@ img { max-width: 100%; display: block; }
 @media (max-width: 768px) {
   .nav-links { display: none; }
   .nav-search-inner { padding: 0 16px; }
-  .nav-inner { padding: 0 16px; gap: 8px; }
+  .nav-inner { padding: 0 12px; gap: 6px; }
   .lang-toggle { display: none; }
-  .nav-actions { gap: 0; }
-  .nav-icon-btn { padding: 6px 8px; }
+  .nav-actions { gap: 4px; }
+  .nav-icon-btn { padding: 6px; }
   .nav-icon-btn span:not(.cart-count-inline) { display: none; }
   .hamburger { display: flex; }
 
