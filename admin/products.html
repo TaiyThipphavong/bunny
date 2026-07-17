@@ -690,13 +690,13 @@ function processFiles(files) {
         if (d.path) {
           imagesList.push(d.path);
         } else {
-          alert('ອັບໂຫລດຮູບບໍ່ໄດ້ — ' + (d.error || 'unknown'));
+          showAlert('ອັບໂຫລດຮູບບໍ່ໄດ້ — ' + (d.error || 'unknown'));
         }
         renderGrid();
       })
       .catch(err => {
         pendingSlots = pendingSlots.filter(s => s.id !== slot.id);
-        alert('ອັບໂຫລດຮູບບໍ່ໄດ້ — ' + err.message);
+        showAlert('ອັບໂຫລດຮູບບໍ່ໄດ້ — ' + err.message);
         renderGrid();
       });
   });
@@ -988,9 +988,9 @@ async function saveProduct() {
   const price = document.getElementById('p-price').value;
   const cost = document.getElementById('p-cost').value;
   const categoryId = document.getElementById('p-cat').value;
-  if (!name || !price) { alert('ກະລຸນາໃສ່ຊື່ ແລະ ລາຄາ'); return; }
-  if (!categoryId) { alert('ກະລຸນາເລືອກໝວດໝູ່'); return; }
-  if (cost && parseFloat(price) < parseFloat(cost)) { alert('ລາຄາຂາຍຕ້ອງບໍ່ໜ້ອຍກວ່າຕົ້ນທຶນ (ກຳໄລຈະຕິດລົບ)'); return; }
+  if (!name || !price) { showAlert('ກະລຸນາໃສ່ຊື່ ແລະ ລາຄາ'); return; }
+  if (!categoryId) { showAlert('ກະລຸນາເລືອກໝວດໝູ່'); return; }
+  if (cost && parseFloat(price) < parseFloat(cost)) { showAlert('ລາຄາຂາຍຕ້ອງບໍ່ໜ້ອຍກວ່າຕົ້ນທຶນ (ກຳໄລຈະຕິດລົບ)'); return; }
 
   const data = {
     id:           document.getElementById('p-id').value,
@@ -1019,7 +1019,7 @@ async function saveProduct() {
     if (!r.ok || d.success === false) throw new Error(d.error || ('HTTP ' + r.status));
     closeModal(); loadProducts();
   } catch (err) {
-    alert('ບັນທຶກສິນຄ້າບໍ່ສຳເລັດ — ' + err.message);
+    showAlert('ບັນທຶກສິນຄ້າບໍ່ສຳເລັດ — ' + err.message);
   }
 }
 
