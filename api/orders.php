@@ -230,7 +230,7 @@ if($method === 'POST') {
         $items = $pdo->prepare("SELECT product_id, quantity FROM order_items WHERE order_id=? AND is_preorder=0");
         $items->execute([$id]);
         foreach ($items->fetchAll(PDO::FETCH_ASSOC) as $it) {
-            $pdo->prepare("UPDATE products SET stock=stock-? WHERE id=?")->execute([$it['quantity'], $it['product_id']]);
+            $pdo->prepare("UPDATE products SET stock=GREATEST(stock-?,0) WHERE id=?")->execute([$it['quantity'], $it['product_id']]);
         }
         $pdo->prepare("UPDATE orders SET stock_deducted=1 WHERE id=?")->execute([$id]);
     } elseif ($stockDeducted && $newStatus === 'cancelled') {

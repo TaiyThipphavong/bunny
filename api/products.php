@@ -89,7 +89,7 @@ switch($method) {
     $status = $data['status'] ?? 'active';
     $categoryId = !empty($data['category_id']) ? (int)$data['category_id'] : null;
     $weight = isset($data['weight']) && $data['weight'] !== '' ? (float)$data['weight'] : null;
-    $stock = isset($data['stock']) && $data['stock'] !== '' ? (int)$data['stock'] : 0;
+    $stock = isset($data['stock']) && $data['stock'] !== '' ? max(0, (int)$data['stock']) : 0;
     $price = isset($data['price']) && $data['price'] !== '' ? (float)$data['price'] : 0;
     $preorderDays = trim($data['preorder_days'] ?? '') ?: null;
     $stmt = $pdo->prepare("INSERT INTO products (category_id,name,description,price,cost_price,stock,image,sku,weight,dimensions,colors,sizes,pre_order,status,preorder_days) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -107,7 +107,7 @@ switch($method) {
   case 'PUT':
     $data = json_decode(file_get_contents('php://input'), true);
     if(isset($data['action']) && $data['action'] === 'update_stock') {
-      $pdo->prepare("UPDATE products SET stock=? WHERE id=?")->execute([(int)$data['stock'], (int)$data['id']]);
+      $pdo->prepare("UPDATE products SET stock=? WHERE id=?")->execute([max(0, (int)$data['stock']), (int)$data['id']]);
       echo json_encode(['success'=>true]);
       break;
     }
@@ -125,7 +125,7 @@ switch($method) {
     $preOrder = isset($data['pre_order']) ? (int)$data['pre_order'] : 0;
     $categoryId = !empty($data['category_id']) ? (int)$data['category_id'] : null;
     $weight = isset($data['weight']) && $data['weight'] !== '' ? (float)$data['weight'] : null;
-    $stock = isset($data['stock']) && $data['stock'] !== '' ? (int)$data['stock'] : 0;
+    $stock = isset($data['stock']) && $data['stock'] !== '' ? max(0, (int)$data['stock']) : 0;
     $price = isset($data['price']) && $data['price'] !== '' ? (float)$data['price'] : 0;
     $preorderDays = trim($data['preorder_days'] ?? '') ?: null;
     $stmt = $pdo->prepare("UPDATE products SET category_id=?,name=?,description=?,price=?,cost_price=?,stock=?,image=?,sku=?,weight=?,dimensions=?,colors=?,sizes=?,status=?,pre_order=?,preorder_days=? WHERE id=?");
