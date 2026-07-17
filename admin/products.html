@@ -1028,10 +1028,10 @@ function deleteProduct(id) {
       let d;
       try { d = await r.json(); } catch { throw new Error('HTTP ' + r.status + ' (server returned invalid response)'); }
       if (!r.ok || d.success === false) throw new Error(d.error || ('HTTP ' + r.status));
-      if (d.soft) alert('ສິນຄ້ານີ້ມີປະຫວັດການສັ່ງຊື້ຢູ່ ຈຶ່ງລຶບຖາວອນບໍ່ໄດ້ — ລະບົບໄດ້ປິດໃຊ້ງານສິນຄ້ານີ້ແທນ (ລູກຄ້າຈະບໍ່ເຫັນອີກ)');
       loadProducts();
+      if (d.soft) showAlert('ສິນຄ້ານີ້ມີປະຫວັດການສັ່ງຊື້ຢູ່ ຈຶ່ງລຶບຖາວອນບໍ່ໄດ້ — ລະບົບໄດ້ປິດໃຊ້ງານສິນຄ້ານີ້ແທນ (ລູກຄ້າຈະບໍ່ເຫັນອີກ)');
     } catch (err) {
-      alert('ລຶບສິນຄ້າບໍ່ສຳເລັດ — ' + err.message);
+      showAlert('ລຶບສິນຄ້າບໍ່ສຳເລັດ — ' + err.message);
     }
   }, { danger: true, okLabel: 'ລຶບ', title: 'ລຶບສິນຄ້າ' });
 }
