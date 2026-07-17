@@ -143,8 +143,18 @@ switch($method) {
   case 'DELETE':
     $id = $_GET['id'];
     $pdo->prepare("DELETE FROM product_images WHERE product_id=?")->execute([$id]);
-    $pdo->prepare("DELETE FROM products WHERE id=?")->execute([$id]);
-    echo json_encode(['success'=>true]);
+    try {
+      $pdo->prepare("DELETE FROM products WHERE id=?")->execute([$id]);
+      echo json_encode(['success'=>true]);
+    } catch (PDOException $e) {
+      if ($e->getCode() === '23000') {
+        /* product has existing order history referencing it -- can't hard delete, hide it instead */
+        $pdo->prepare("UPDATE products SET status='inactive' WHERE id=?")->execute([$id]);
+        echo json_encode(['success'=>true,'soft'=>true]);
+      } else {
+        throw $e;
+      }
+    }
     break;
 }
 } catch (Throwable $e) {

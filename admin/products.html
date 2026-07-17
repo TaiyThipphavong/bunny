@@ -1023,8 +1023,16 @@ async function saveProduct() {
 
 function deleteProduct(id) {
   showConfirm('ຢືນຢັນລຶບສິນຄ້ານີ້? ຂໍ້ມູນຈະຖືກລຶບຖາວອນ', async () => {
-    await fetch(`../api/products.php?id=${id}`, { method:'DELETE' });
-    loadProducts();
+    try {
+      const r = await fetch(`../api/products.php?id=${id}`, { method:'DELETE' });
+      let d;
+      try { d = await r.json(); } catch { throw new Error('HTTP ' + r.status + ' (server returned invalid response)'); }
+      if (!r.ok || d.success === false) throw new Error(d.error || ('HTTP ' + r.status));
+      if (d.soft) alert('ສິນຄ້ານີ້ມີປະຫວັດການສັ່ງຊື້ຢູ່ ຈຶ່ງລຶບຖາວອນບໍ່ໄດ້ — ລະບົບໄດ້ປິດໃຊ້ງານສິນຄ້ານີ້ແທນ (ລູກຄ້າຈະບໍ່ເຫັນອີກ)');
+      loadProducts();
+    } catch (err) {
+      alert('ລຶບສິນຄ້າບໍ່ສຳເລັດ — ' + err.message);
+    }
   }, { danger: true, okLabel: 'ລຶບ', title: 'ລຶບສິນຄ້າ' });
 }
 
