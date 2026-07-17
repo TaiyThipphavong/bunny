@@ -986,9 +986,11 @@ function editProduct(p) {
 async function saveProduct() {
   const name = document.getElementById('p-name').value.trim();
   const price = document.getElementById('p-price').value;
+  const cost = document.getElementById('p-cost').value;
   const categoryId = document.getElementById('p-cat').value;
   if (!name || !price) { alert('ກະລຸນາໃສ່ຊື່ ແລະ ລາຄາ'); return; }
   if (!categoryId) { alert('ກະລຸນາເລືອກໝວດໝູ່'); return; }
+  if (cost && parseFloat(price) < parseFloat(cost)) { alert('ລາຄາຂາຍຕ້ອງບໍ່ໜ້ອຍກວ່າຕົ້ນທຶນ (ກຳໄລຈະຕິດລົບ)'); return; }
 
   const data = {
     id:           document.getElementById('p-id').value,
