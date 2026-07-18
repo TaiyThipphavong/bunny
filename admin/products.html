@@ -435,6 +435,10 @@
           <input type="number" id="p-cost" placeholder="0">
         </div>
       </div>
+      <div class="fg">
+        <label>ລາຄາເດີມ / ກ່ອນຫຼຸດ (₭) — ໃສ່ຖ້າຕ້ອງການຈັດໂປຮ</label>
+        <input type="number" id="p-old-price" placeholder="ວ່າງໄວ້ຖ້າບໍ່ຈັດໂປຮ">
+      </div>
       <div class="fg-row">
         <div class="fg">
           <label>ຈຳນວນສາງ</label>
@@ -904,6 +908,7 @@ function openModal(reset = true) {
     document.getElementById('p-cat').value = '';
     document.getElementById('p-price').value = '';
     document.getElementById('p-cost').value  = '';
+    document.getElementById('p-old-price').value = '';
     document.getElementById('p-stock').value = '';
     document.getElementById('margin-display').textContent = 'ກຳໄລ: —';
     document.getElementById('p-sku').value = '';
@@ -946,6 +951,7 @@ function editProduct(p) {
   document.getElementById('p-cat').value = p.category_id || '';
   document.getElementById('p-price').value = p.price || '';
   document.getElementById('p-cost').value  = p.cost_price || '';
+  document.getElementById('p-old-price').value = p.old_price || '';
   document.getElementById('p-stock').value = p.stock || '';
   updateMarginDisplay();
   document.getElementById('p-sku').value = p.sku || '';
@@ -987,10 +993,12 @@ async function saveProduct() {
   const name = document.getElementById('p-name').value.trim();
   const price = document.getElementById('p-price').value;
   const cost = document.getElementById('p-cost').value;
+  const oldPrice = document.getElementById('p-old-price').value;
   const categoryId = document.getElementById('p-cat').value;
   if (!name || !price) { showAlert('ກະລຸນາໃສ່ຊື່ ແລະ ລາຄາ'); return; }
   if (!categoryId) { showAlert('ກະລຸນາເລືອກໝວດໝູ່'); return; }
   if (cost && parseFloat(price) < parseFloat(cost)) { showAlert('ລາຄາຂາຍຕ້ອງບໍ່ໜ້ອຍກວ່າຕົ້ນທຶນ (ກຳໄລຈະຕິດລົບ)'); return; }
+  if (oldPrice && parseFloat(oldPrice) <= parseFloat(price)) { showAlert('ລາຄາເດີມຕ້ອງສູງກວ່າລາຄາຂາຍ ຈຶ່ງຈະສະແດງເປັນໂປຮໄດ້'); return; }
 
   const data = {
     id:           document.getElementById('p-id').value,
@@ -998,6 +1006,7 @@ async function saveProduct() {
     name,
     description:  document.getElementById('p-desc').value,
     price,
+    old_price:    oldPrice,
     stock:        document.getElementById('p-stock').value,
     image:        imagesList[0] || '',
     extra_images: imagesList.slice(1),
