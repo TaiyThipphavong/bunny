@@ -319,7 +319,7 @@ async function loadProduct(){
 
       <!-- RIGHT: info panel -->
       <div class="product-info-panel">
-        <div class="product-cat-badge">${p.category_name_lo||p.category_name||''}</div>
+        <div class="product-cat-badge">${p.category_name_lo||p.category_name||''}${p.old_price ? ` <span style="background:#e74c3c;color:#fff;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;font-weight:700;border-radius:3px;margin-left:6px">SALE</span>` : ''}</div>
         <h1 class="product-title">${p.name_lo||p.name}</h1>
         <div class="product-price-big">${Utils.fmt(p.price)}${p.old_price ? ` <s style="color:#aaa;font-size:.6em;font-weight:400">${Utils.fmt(p.old_price)}</s>` : ''}</div>
 
