@@ -209,7 +209,7 @@ if($method === 'POST') {
     $counts = $chk->fetch(PDO::FETCH_ASSOC);
     $isPreorderOrder = $counts['total'] > 0 && $counts['pre'] == $counts['total'];
 
-    if ($isPreorderOrder && !in_array($newStatus, ['pending','confirmed','cancelled'], true)) {
+    if ($isPreorderOrder && !in_array($newStatus, ['pending','confirmed','cancelled','returned'], true)) {
         $confStmt = $pdo->prepare("SELECT preorder_confirmed FROM orders WHERE id=?");
         $confStmt->execute([$id]);
         if (!$confStmt->fetchColumn()) {
@@ -233,7 +233,7 @@ if($method === 'POST') {
             $pdo->prepare("UPDATE products SET stock=GREATEST(stock-?,0) WHERE id=?")->execute([$it['quantity'], $it['product_id']]);
         }
         $pdo->prepare("UPDATE orders SET stock_deducted=1 WHERE id=?")->execute([$id]);
-    } elseif ($stockDeducted && $newStatus === 'cancelled') {
+    } elseif ($stockDeducted && in_array($newStatus, ['cancelled','returned'], true)) {
         $items = $pdo->prepare("SELECT product_id, quantity FROM order_items WHERE order_id=? AND is_preorder=0");
         $items->execute([$id]);
         foreach ($items->fetchAll(PDO::FETCH_ASSOC) as $it) {

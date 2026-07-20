@@ -56,6 +56,7 @@
     .sb-shipped   { background:#e8f5e9; color:#2e7d32; }
     .sb-completed { background:#111;    color:#fff;    }
     .sb-cancelled { background:#fde8e8; color:#c0392b; }
+    .sb-returned  { background:#f3e8ff; color:#7c3aed; }
 
     /* ── DETAIL BUTTON ── */
     .btn-detail {
@@ -303,6 +304,7 @@
       <option value="shipped">ກຳລັງສົ່ງ</option>
       <option value="completed">ສຳເລັດ</option>
       <option value="cancelled">ຍົກເລີກ</option>
+      <option value="returned">ສົ່ງຄືນ</option>
     </select>
     <select class="filter-select" id="filter-pre" onchange="applyFilter()">
       <option value="">ທຸກລາຍການ</option>
@@ -418,6 +420,7 @@
           <option value="shipped">ກຳລັງສົ່ງ</option>
           <option value="completed">ສຳເລັດ</option>
           <option value="cancelled">ຍົກເລີກ</option>
+          <option value="returned">ສົ່ງຄືນ</option>
         </select>
         <button class="btn-save-status" onclick="updateStatus()">ບັນທຶກ</button>
       </div>
@@ -453,8 +456,8 @@
 <script>
 let allOrders = [], currentId = null, modalItems = [];
 
-const statusLabel = s => ({ pending:'ລໍຖ້າ', confirmed:'ຢືນຢັນ', shipped:'ກຳລັງສົ່ງ', completed:'ສຳເລັດ', cancelled:'ຍົກເລີກ' })[s] || s;
-const statusCls   = s => ({ pending:'sb-pending', confirmed:'sb-confirmed', shipped:'sb-shipped', completed:'sb-completed', cancelled:'sb-cancelled' })[s] || '';
+const statusLabel = s => ({ pending:'ລໍຖ້າ', confirmed:'ຢືນຢັນ', shipped:'ກຳລັງສົ່ງ', completed:'ສຳເລັດ', cancelled:'ຍົກເລີກ', returned:'ສົ່ງຄືນ' })[s] || s;
+const statusCls   = s => ({ pending:'sb-pending', confirmed:'sb-confirmed', shipped:'sb-shipped', completed:'sb-completed', cancelled:'sb-cancelled', returned:'sb-returned' })[s] || '';
 const shippingMap = { anousith:'🚚 ອານຸສິດ', houngaloun:'🚛 ຮຸ່ງອາລຸນ' };
 const pmMap       = { transfer:'💳 ໂອນເງິນ', cod:'📦 COD ຈ່າຍປາຍທາງ' };
 
